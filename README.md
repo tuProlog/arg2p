@@ -1,4 +1,4 @@
-# DeonLite
+# Arg2P
 
 How to run:
 ```bash
