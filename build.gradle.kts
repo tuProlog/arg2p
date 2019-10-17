@@ -22,5 +22,5 @@ configure<JavaPluginConvention> {
 }
 
 application {
-    mainClassName = "alice.tuprologx.ide.JavaIDEWithDeonLite"
+    mainClassName = "alice.tuprologx.ide.JavaIDEWithArg2P"
 }
