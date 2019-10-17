@@ -1,7 +1,6 @@
 % ----------------------------------------------------------------
 % statementLabelling.pl
-%
-% Coder: Regis Riveret
+% PIKA-lab
 % Year: 2019
 % ---------------------------------------------------------------
 
@@ -19,9 +18,3 @@ statementLabelling([IN, OUT, UND], [In, Ni, Und]) :-
     sort(Und, SortUnd),
 
     printStatementLabelling(  [SortIn, SortNi, SortUnd] ).
-
-
-
-% -----------------------------------------------------------------------------
-% E O F -- E O F -- E O F -- E O F -- E O F -- E O F -- E O F -- E O F -- E O F
-% -----------------------------------------------------------------------------
