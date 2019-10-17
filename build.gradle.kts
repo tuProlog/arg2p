@@ -12,7 +12,7 @@ group = "it.unibo.argumentation.deonlite"
 version = "1.0-SNAPSHOT"
 
 dependencies {
-    api("it.unibo.alice.tuprolog", "2p-ui", "4.1.+")
+    api("it.unibo.alice.tuprolog", "2p-ui", "4.1.1")
     testImplementation("junit", "junit", "4.12")
 }
 
