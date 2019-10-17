@@ -1,21 +1,20 @@
 % ----------------------------------------------------------------
 % Debug.pl
-%
-% Coder: Regis Riveret
+% PIKA-lab
 % Year: 2019
 % ---------------------------------------------------------------
 
 
-pleaseDebug :-
-    asserta(debugDeonLite).
+enableDebug :-
+    asserta(debugArgumentationProcess).
 
-pleaseNoDebug :-
-    retractall(debugDeonLite).
+disableDebug :-
+    retractall(debugArgumentationProcess).
 
 % ========================================================================
 
 printTheory :-
-    debugDeonLite,
+    debugArgumentationProcess,
     writeln('HERE THE THEORY:'),
     findall(rule([Id, Body, Head]), rule([Id, Body, Head]), ListRules),
     writeList(ListRules),
@@ -33,7 +32,7 @@ printTheory.
 % ========================================================================
 
 printArgumentationGraph :-
-        debugDeonLite,
+        debugArgumentationProcess,
 	findall( [IDPremises, '\n',  ' TOPRULE ',  TopRule, '\n', ' CONCLUSION ', RuleHead, '\n'],
                  (   argument([IDPremises, TopRule, RuleHead]),
                      ground(argument([IDPremises, TopRule, RuleHead]))   ),
@@ -53,7 +52,7 @@ printArgumentationGraph.
 % ========================================================================
 
 printArgumentLabelling(  [IN, OUT, UND] ) :-
-    debugDeonLite,
+    debugArgumentationProcess,
     writeln('    '),
     writeln('HERE THE ARGUMENTS LABELLED IN: '),
     writeList(IN),
@@ -69,7 +68,7 @@ printArgumentLabelling( _ ).
 % ========================================================================
 
 printStatementLabelling(  [In, Ni, Und] ) :-
-    debugDeonLite,
+    debugArgumentationProcess,
     writeln('    '),
     writeln('HERE THE STATEMENTS LABELLED IN: '),
     writeList(In),
@@ -82,9 +81,3 @@ printStatementLabelling(  [In, Ni, Und] ) :-
 
 
 printStatementLabelling(  _ ).
-
-
-
-% -----------------------------------------------------------------------------
-% E O F -- E O F -- E O F -- E O F -- E O F -- E O F -- E O F -- E O F -- E O F
-% -----------------------------------------------------------------------------
