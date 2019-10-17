@@ -1,12 +1,12 @@
 package alice.tuprologx.ide;
 
-import it.unibo.argumentation.deonlite.AbstractDeonLite2PLibrary;
+import it.unibo.argumentation.deonlite.DeonLite2PLibrary;
 
 import javax.swing.*;
 
 public class JavaIDEWithDeonLite extends JavaIDE {
     public JavaIDEWithDeonLite() {
-        super(AbstractDeonLite2PLibrary::loadDeonLiteOnPrologEngine);
+        super(DeonLite2PLibrary::loadDeonLiteOnPrologEngine);
     }
 
     public static void main(String[] args) {
