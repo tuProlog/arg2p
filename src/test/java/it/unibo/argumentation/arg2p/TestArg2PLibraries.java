@@ -1,9 +1,9 @@
-package it.unibo.argumentation.deonlite;
+package it.unibo.argumentation.arg2p;
 
 import alice.tuprolog.Theory;
 import org.junit.Test;
 
-public class TestDeonLiteLibraries {
+public class TestArg2PLibraries {
 
     @Test
     public void libUtilsIsParsedCorrectly() {

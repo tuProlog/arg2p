@@ -1,4 +1,4 @@
-package it.unibo.argumentation.deonlite;
+package it.unibo.argumentation.arg2p;
 
 import alice.tuprolog.Library;
 import alice.tuprolog.Prolog;
@@ -7,13 +7,13 @@ import alice.util.Tools;
 import java.io.File;
 import java.io.IOException;
 
-public class DeonLite2PLibrary extends Library {
+public class Arg2PLibrary extends Library {
 
     private final String theoryFileName;
 
-    public DeonLite2PLibrary(String theoryFileName) {
+    public Arg2PLibrary(String theoryFileName) {
         this.theoryFileName = theoryFileName;
-        final File f = new File(DeonLite2PLibrary.class.getResource(theoryFileName + ".pl").getFile());
+        final File f = new File(Arg2PLibrary.class.getResource(theoryFileName + ".pl").getFile());
         if (!f.exists()) {
             throw new IllegalArgumentException(String.format("File %s does not exist.", f.getAbsoluteFile()));
         }
@@ -28,7 +28,7 @@ public class DeonLite2PLibrary extends Library {
     public String getTheory() {
         try {
             return Tools.loadText(
-                    DeonLite2PLibrary.class.getResourceAsStream(theoryFileName + ".pl")
+                    Arg2PLibrary.class.getResourceAsStream(theoryFileName + ".pl")
             );
         } catch (IOException e) {
             throw new IllegalStateException(e);
