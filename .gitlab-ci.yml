@@ -1,0 +1,12 @@
+image: gciatto/my-images:jdk12-alpine-gradle551
+
+variables:
+  GOPTS: "--no-daemon --console=plain"
+
+build:
+  stage: build
+  script: ./gradlew classes javadoc $GOPTS
+
+test:
+  stage: test
+  script: ./gradlew check $GOPTS
