@@ -1,23 +1,48 @@
 % ----------------------------------------------------------------
-% argumentationgraph.pl
-% PIKA-lab
+% argumentationEngineInterface.pl
+%
+% PIKA-LAB
 % Year: 2019
 % ---------------------------------------------------------------
 
 
+% Literals statments have the following form.
+% literals: [atom] or [neg, atom]
+% deontic literals: [obl, [atom]] or [obl, [neg, atom]] or [neg, obl,[neg, atom]] or [perm, [neg, atom]]
+%========================================================================
+
+conflict( [Atom], [neg, Atom]).
+conflict( [neg, Atom], [Atom]).
+
+conflict( [obl, [Atom]],  [obl, [neg, Atom]]).
+conflict( [obl, [neg, Atom]],  [obl, [Atom]]).
+
+conflict( [obl, Lit],  [neg, obl, Lit]).
+conflict( [neg, obl, Lit],  [obl, Lit]).
+
+conflict( [perm, [Atom]],  [obl, [neg, Atom]]).
+conflict( [obl, [neg, Atom]],  [perm, [Atom]]).
+
+conflict( [perm, [neg, Atom]],  [obl, [Atom]]).
+conflict( [obl, [Atom]],  [perm, [neg, Atom]]).
+
+
+%========================================================================
 buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
-  retractall(argument(_)), !,
-  retractall(attack(_, _)), !,
-  retractall(support(_, _)), !,
-  buildArguments,
-  buildAttacks,
-  findall( [IDPremises,  TopRule,  RuleHead],
-          ( argument([IDPremises, TopRule, RuleHead]),
-            ground(argument([IDPremises, TopRule, RuleHead])) ),
-          Arguments),
-  findall( (A1, A2), support(A1, A2), Supports),
+        retractall(argument(_)), !,
+        retractall(attack(_, _)), !,
+	retractall(support(_, _)), !,
+	buildArguments,
+        buildAttacks,
+
+        findall( [IDPremises,  TopRule,  RuleHead],
+                 ( argument([IDPremises, TopRule, RuleHead]),
+                   ground(argument([IDPremises, TopRule, RuleHead])) ),
+                 Arguments),
+        findall( (A1, A2), support(A1, A2), Supports),
 	findall( (A1, A2), attack(A1, A2),  Attacks),
-  printArgumentationGraph.
+
+        printArgumentationGraph.
 
 
 %==================================
@@ -31,7 +56,7 @@ buildArguments :-
 	\+ argument(NewArgument),
 	assertSupports(Supports, NewArgument),
 	asserta(argument(NewArgument)),
-  buildArguments.
+        buildArguments.
 
 buildArguments.
 
@@ -40,12 +65,13 @@ buildArguments.
 
 ruleBodyIsSupported([], ResultPremises, ResultSupports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ [unless, _] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
-  ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
+	ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ Statement | Others], Premises, Supports, ResultPremises, ResultSupports) :-
-  argument([ArgumentID, RuleID, Statement]),
+        argument([ArgumentID, RuleID, Statement]),
 	append(ArgumentID, Premises, NewPremises),
 	append([[ArgumentID, RuleID, Statement]], Supports, NewSupports),
 	ruleBodyIsSupported(Others, NewPremises, NewSupports, ResultPremises, ResultSupports).
+
 
 assertSupports([], _).
 assertSupports([Support | OtherSupports], Argument) :-
