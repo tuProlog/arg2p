@@ -1,20 +1,21 @@
 % ----------------------------------------------------------------
 % Debug.pl
-% PIKA-lab
+%
+% PIKA-LAB
 % Year: 2019
 % ---------------------------------------------------------------
 
 
 enableDebug :-
-    asserta(debugArgumentationProcess).
+    asserta(debugArg2P).
 
 disableDebug :-
-    retractall(debugArgumentationProcess).
+    retractall(debugArg2P).
 
 % ========================================================================
 
 printTheory :-
-    debugArgumentationProcess,
+    debugArg2P,
     writeln('HERE THE THEORY:'),
     findall(rule([Id, Body, Head]), rule([Id, Body, Head]), ListRules),
     writeList(ListRules),
@@ -32,7 +33,7 @@ printTheory.
 % ========================================================================
 
 printArgumentationGraph :-
-        debugArgumentationProcess,
+        debugArg2P,
 	findall( [IDPremises, '\n',  ' TOPRULE ',  TopRule, '\n', ' CONCLUSION ', RuleHead, '\n'],
                  (   argument([IDPremises, TopRule, RuleHead]),
                      ground(argument([IDPremises, TopRule, RuleHead]))   ),
@@ -41,7 +42,7 @@ printArgumentationGraph :-
 	findall( (A1, ' ATTACKS ', A2),  attack(A1, A2),  AttacksToPrint),
 
 
-        writeln('HERE THE GROUNDED SEMI-ABSTRACT ARGUMNETATION GRAPH'),
+        writeln('HERE THE GROUNDED SEMI-ABSTRACT ARGUMENTATION GRAPH'),
 	writeList(ArgumentsToPrint), writeln(' '),
 	writeList(SupportsToPrint), writeln(' '),
 	writeList(AttacksToPrint).
@@ -52,7 +53,7 @@ printArgumentationGraph.
 % ========================================================================
 
 printArgumentLabelling(  [IN, OUT, UND] ) :-
-    debugArgumentationProcess,
+    debugArg2P,
     writeln('    '),
     writeln('HERE THE ARGUMENTS LABELLED IN: '),
     writeList(IN),
@@ -68,7 +69,7 @@ printArgumentLabelling( _ ).
 % ========================================================================
 
 printStatementLabelling(  [In, Ni, Und] ) :-
-    debugArgumentationProcess,
+    debugArg2P,
     writeln('    '),
     writeln('HERE THE STATEMENTS LABELLED IN: '),
     writeList(In),
