@@ -7,7 +7,7 @@
 
 writeList([]).
 writeList([X|Others]) :-
-	writeln(X),
+	write(X),write('\n'),
 	writeList(Others).
 
 
