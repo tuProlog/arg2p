@@ -5,7 +5,6 @@
 % Year: 2019
 % ---------------------------------------------------------------
 
-
 enableDebug :-
     asserta(debugArg2P).
 
@@ -16,16 +15,16 @@ disableDebug :-
 
 printTheory :-
     debugArg2P,
-    writeln('HERE THE THEORY:'),
+    write('HERE THE THEORY:'),write('\n'),
     findall(rule([Id, Body, Head]), rule([Id, Body, Head]), ListRules),
-    writeList(ListRules),
-    writeln(' '),
+    writeList(ListRules),write('\n'),
+    write(' '),write('\n'),
     findall(conflict(A, B), conflict(A, B), ListConflicts),
-    writeList(ListConflicts),
-    writeln(' '),
+    writeList(ListConflicts),write('\n'),
+    write(' '),write('\n'),
     findall(sup(A, B), sup(A, B), ListSups),
-    writeList(ListSups),
-    writeln(' ').
+    writeList(ListSups),write('\n'),
+    write(' '),write('\n').
 
 printTheory.
 
@@ -42,10 +41,10 @@ printArgumentationGraph :-
 	findall( (A1, ' ATTACKS ', A2),  attack(A1, A2),  AttacksToPrint),
 
 
-        writeln('HERE THE GROUNDED SEMI-ABSTRACT ARGUMENTATION GRAPH'),
-	writeList(ArgumentsToPrint), writeln(' '),
-	writeList(SupportsToPrint), writeln(' '),
-	writeList(AttacksToPrint).
+  write('HERE THE GROUNDED SEMI-ABSTRACT ARGUMENTATION GRAPH'),write('\n'),
+	writeList(ArgumentsToPrint), write('\n'),write(' '),write('\n'),
+	writeList(SupportsToPrint), write('\n'),write(' '),write('\n'),
+	writeList(AttacksToPrint),write('\n').
 
 printArgumentationGraph.
 
@@ -54,15 +53,15 @@ printArgumentationGraph.
 
 printArgumentLabelling(  [IN, OUT, UND] ) :-
     debugArg2P,
-    writeln('    '),
-    writeln('HERE THE ARGUMENTS LABELLED IN: '),
-    writeList(IN),
-    writeln('    '),
-    writeln('HERE THE ARGUMENTS LABELLED OUT: '),
-    writeList(OUT),
-    writeln('    '),
-    writeln('HERE THE ARGUMENTS LABELLED UND: '),
-    writeList(UND).
+    write('    '),write('\n'),
+    write('HERE THE ARGUMENTS LABELLED IN: '),write('\n'),
+    writeList(IN),write('\n'),
+    write('    '),write('\n'),
+    write('HERE THE ARGUMENTS LABELLED OUT: '),write('\n'),
+    writeList(OUT),write('\n'),
+    write('    '),write('\n'),
+    write('HERE THE ARGUMENTS LABELLED UND: '),write('\n'),
+    writeList(UND),write('\n').
 
 printArgumentLabelling( _ ).
 
@@ -70,15 +69,15 @@ printArgumentLabelling( _ ).
 
 printStatementLabelling(  [In, Ni, Und] ) :-
     debugArg2P,
-    writeln('    '),
-    writeln('HERE THE STATEMENTS LABELLED IN: '),
-    writeList(In),
-    writeln('    '),
-    writeln('HERE THE STATEMENTS LABELLED NI: '),
-    writeList(Ni),
-    writeln('    '),
-    writeln('HERE THE STATEMENTS LABELLED UND: '),
-    writeList(Und).
+    write('    '),write('\n'),
+    write('HERE THE STATEMENTS LABELLED IN: '),write('\n'),
+    writeList(In),write('\n'),
+    write('    '),write('\n'),
+    write('HERE THE STATEMENTS LABELLED NI: '),write('\n'),
+    writeList(Ni),write('\n'),
+    write('    '),write('\n'),
+    write('HERE THE STATEMENTS LABELLED UND: '),write('\n'),
+    writeList(Und),write('\n').
 
 
 printStatementLabelling(  _ ).
