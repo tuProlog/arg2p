@@ -21,7 +21,7 @@ in(A, (_ , Cs)) :- in(A, Cs).
 convertRule :- (RuleName : Preconditions => Effects), %write('Preconditions '),write(Preconditions), nl,
 							%findall(X, in(X, Preconditions), Lprecond), findall(Y, in(Y, Effects), Leffects),
 							tuple_to_list(Preconditions, Lprecond),  tuple_to_list(Effects, Leffects),
-							write('Leffects '),write(Leffects), nl,
+							%write('Leffects '),write(Leffects), nl,
 							check_negation(Lprecond, LprecondChecked),
 							%write('Leffects '), write(Leffects), nl,
 							check_negation_effects(Leffects, LeffectsChecked),
