@@ -18,8 +18,12 @@ in(A, A) :- nonvar(A), A \= (_ , _).
 in(A, (A, _)).
 in(A, (_ , Cs)) :- in(A, Cs).
 
-convertRule :- (RuleName : Preconditions => Effects), %write('Preconditions '),write(Preconditions), nl,
-							%findall(X, in(X, Preconditions), Lprecond), findall(Y, in(Y, Effects), Leffects),
+convertAllRules :- findall(RuleName, (RuleName : Preconditions => Effects), L), convertAllRules(L).
+
+convertAllRules([]).
+convertAllRules([H|T]) :- convertRule(H), convertAllRules(T).
+
+convertRule(RuleName) :- (RuleName : Preconditions => Effects), %write('Preconditions '),write(Preconditions), nl,
 							tuple_to_list(Preconditions, Lprecond),  tuple_to_list(Effects, Leffects),
 							%write('Leffects '),write(Leffects), nl,
 							check_negation(Lprecond, LprecondChecked),
