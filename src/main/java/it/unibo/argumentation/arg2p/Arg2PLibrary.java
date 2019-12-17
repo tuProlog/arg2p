@@ -42,5 +42,6 @@ public class Arg2PLibrary extends Library {
         engine.loadLibrary(ArgumentLabelling.class.getName());
         engine.loadLibrary(StatementLabelling.class.getName());
         engine.loadLibrary(ArgumentationEngineInterface.class.getName());
+        engine.loadLibrary(RuleTranslator.class.getName());
     }
 }

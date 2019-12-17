@@ -34,4 +34,9 @@ public class TestArg2PLibraries {
     public void libArgumentationEngineInterfaceIsParsedCorrectly() {
         Theory.parseWithStandardOperators(new ArgumentationEngineInterface().getTheory());
     }
+
+    @Test
+    public void libRuleTranslatorIsParsedCorrectly() {
+        Theory.parseWithStandardOperators(new RuleTranslator().getTheory());
+    }
 }
