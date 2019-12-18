@@ -1,19 +1,17 @@
-rule([rvehi,  [], [vehi] ]).
-rule([remer,  [], [emer] ]).
-rule([rProh, [ [vehi] ], [obl, [neg, enter]] ]).
-rule([rPerm, [ [emer] ], [perm, [enter]] ]).
+rvehi: [] => vehi.
+remer: [] => emer.
+rProh: vehi => o(-enter).
+rPerm: emer => p(enter).
+v: o(-enter), enter => violation.
+f: violation => fine.
+vPrime: [] => -violation.
+fPrime: [] => -fine.
+s: violation => o(stop).
 
-rule([v, [ [obl, [neg, enter]], [enter] ], [violation] ]).
-rule([f, [ [violation] ], [fine] ]).
-rule([vPrime, [ ], [neg, violation] ]).
-rule([fPrime, [ ], [neg, fine] ]).
+e: [] => enter.
 
-rule([s, [ [violation] ], [obl, [stop]] ]).
-rule([e, [], [enter] ]).
-
-
-sup(_, [d, _]).
-sup(_, [p, _]).
+%sup(_, [d, _]).
+%sup(_, [p, _]).
 sup(rPerm, rProh).
 
 sup(v, vPrime).
@@ -42,17 +40,11 @@ outAsItShouldBe( [
 %==============================================
 
 testEmer :-
-  (
-  go([In, Out, _]),
-
-  inAsItShouldBe( InAsItShouldBe),
-  subtract( In, InAsItShouldBe, []),
-  subtract( InAsItShouldBe, In, []),
-  write( ['==============================================> Test', X, ' OK for statements labelled in.']),write('\n'),
-
-  outAsItShouldBe( OutAsItShouldBe),
-  subtract( Out, OutAsItShouldBe, []),
-  subtract( OutAsItShouldBe, Out, []),
-  write( ['==============================================> Test', X, ' OK for statements labelled und.']),write('\n'),
-  write(' ')
-   ).
+  convertAllRules,
+	buildLabelSets([In, Out, Und]),
+  write('==============================================> IN '),write('\n'),
+  writeList(In),write('\n'),
+  write('==============================================> OUT '),write('\n'),
+  writeList(Out),write('\n'),
+  write('==============================================> UND '),write('\n'),
+	writeList(Und),write('\n').
