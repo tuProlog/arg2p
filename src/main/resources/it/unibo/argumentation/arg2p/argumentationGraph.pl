@@ -73,6 +73,7 @@ buildArguments.
 % SUPPORT DEFINITION
 %========================================================================
 % means that argument a supports argument b if the acceptance of a implies the acceptance of b
+% support are inferences from grounds to claims
 %========================================================================
 ruleBodyIsSupported([], ResultPremises, ResultSupports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ [unless, _] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
