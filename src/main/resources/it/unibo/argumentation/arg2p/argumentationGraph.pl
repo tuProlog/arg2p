@@ -56,6 +56,12 @@ buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
 %     Conc(An) ⇒ ψ},
 %     TopRule(A) = Conc(A1 ), . . . Conc(An ) ⇒ ψ .
 %========================================================================
+
+% Per ogni regola, vedo le premesse, controllo che ci siano degli argomenti
+% a favore degli statements contenuti nel corpo della regola,
+% se si gli aggiungo al supporto dell'argomento.
+% Se l'argomento è nuovo lo aggiungo alla teoria
+
 buildArguments :-
 	rule([RuleID, RuleBody, RuleHead]),
 	ruleBodyIsSupported(RuleBody, [], [], PremisesOfSupportingArguments, Supports),
@@ -65,7 +71,7 @@ buildArguments :-
 	\+ argument(NewArgument),
 	assertSupports(Supports, NewArgument),
 	asserta(argument(NewArgument)),
-        buildArguments.
+    buildArguments.
 
 buildArguments.
 
@@ -79,7 +85,7 @@ ruleBodyIsSupported([], ResultPremises, ResultSupports, ResultPremises, ResultSu
 ruleBodyIsSupported([ [unless, _] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
 	ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ Statement | Others], Premises, Supports, ResultPremises, ResultSupports) :-
-        argument([ArgumentID, RuleID, Statement]),
+    argument([ArgumentID, RuleID, Statement]),
 	append(ArgumentID, Premises, NewPremises),
 	append([[ArgumentID, RuleID, Statement]], Supports, NewSupports),
 	ruleBodyIsSupported(Others, NewPremises, NewSupports, ResultPremises, ResultSupports).
@@ -101,6 +107,16 @@ assertSupports([Support | OtherSupports], Argument) :-
 %• B undercuts A (on A0) iff exists A0 in Sub(A) such that  conc(B) belongs to the body of
 %TopRule(A0), i.e. ( conc(B)) in Body(TopRule(A0)).
 %========================================================================
+
+% controllo sempre in cascata
+
+% -- REBUTS --
+% prendo due argomenti A e B
+% di B ottengo il supporto
+% controllo che la conclusione dei membri del supporto non sia in conflitto con la conclusione di A
+% se lo è controllo se B è superiore ad A
+% in caso affermativo, se già non l'ho inserito, aggiungo l'attacco alla teoria
+
 buildAttacks :-
 	argument([IDPremisesA, RuleA, RuleHeadA]),
 	argument([IDPremisesB, RuleB, RuleHeadB]),
@@ -122,12 +138,15 @@ buildAttacks :-
 	asserta( attack([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
 	fail.
 
+/*
+    Attacchi transitivi
+*/
 buildAttacks :-
 	attack(A, B),
 	support(B, C),
 	\+ attack(A, C),
 	asserta( attack(A, C)),
-        buildAttacks.
+    buildAttacks.
 
 buildAttacks.
 
@@ -176,7 +195,7 @@ rebuts(A, B) :-
 %------------------------------------------------------------------------
 % Superiority definition
 % A superiority relation over a set of rules Rules is an antireflexive and
-%  antisymmetric binary relation over Rules
+% antisymmetric binary relation over Rules
 %------------------------------------------------------------------------
 superiorArgument([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
         sup(TopRuleA, TopRuleB).

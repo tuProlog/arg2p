@@ -6,35 +6,39 @@
 
 
 argumentLabelling([Arguments, _, _], [IN, OUT, UND]) :-
-    labelArguments(Arguments, [], [], [], IN, OUT, UND),
+    labelArguments(Arguments, [], [], IN, OUT, UND),
     printArgumentLabelling( [IN, OUT, UND] ).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-labelArguments([], _, IN, OUT, IN, OUT, []).
+labelArguments(UND, IN, OUT, ResultIN, ResultOUT, ResultUND) :-
 
-labelArguments(Ai, Ai,  IN, OUT, IN, OUT, Ai).
-
-labelArguments(Ai, _, IN, OUT, ResultIN, ResultOUT, ResultUND) :-
-
-   findall(A, ( member(A, Ai), allAttacksOUT(A, OUT) ), NewListIN),
+   findall(A, ( member(A, UND), allAttacksOUT(A, OUT) ), NewListIN),
    append(IN, NewListIN, NewIN),
-
-   findall(A, ( member(A, Ai), oneAttackIN(A, NewIN) ), NewListOUT),
+   findall(A, ( member(A, UND), oneAttackIN(A, NewIN) ), NewListOUT),
    append(OUT, NewListOUT, NewOUT),
 
-   append(NewIN, NewOUT, NewLabelledArguments),
-   subtract(Ai, NewLabelledArguments, AiPlus1),
+   append(NewListIN, NewListOUT, NewLabelledArguments),
+   \+ isEmptyList(NewLabelledArguments),
 
-   labelArguments(AiPlus1, Ai, NewIN, NewOUT, ResultIN, ResultOUT, ResultUND).
+   subtract(UND, NewLabelledArguments, UndPlus1),
+   labelArguments(UndPlus1, NewIN, NewOUT, ResultIN, ResultOUT, ResultUND).
 
+labelArguments(UND, IN, OUT, IN, OUT, UND).
 
+/*
+    If an attack exists, it should come from an OUT argument
+*/
 allAttacksOUT(A, OUT) :-
     \+ ( attack(B, A),
     \+ ( member(B, OUT))
        ).
 
+/*
+    Find an attack, if exists, from an IN argument, then ends
+*/
 oneAttackIN(A, IN) :-
     attack(B, A),
     member(B, IN), !.
+
+isEmptyList([]).

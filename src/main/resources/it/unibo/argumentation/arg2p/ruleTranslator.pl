@@ -9,57 +9,68 @@
 % rule([v, [ [obl, [neg, enter]], [enter] ], [violation] ]).
 % rule([rPerm, [ [emer] ], [perm, [enter]] ]).
 
-
 :- op(1199, xfx, '=>').
 :- op(1001, xfx, ':').
-
 
 in(A, A) :- nonvar(A), A \= (_ , _).
 in(A, (A, _)).
 in(A, (_ , Cs)) :- in(A, Cs).
 
+/*
+ *  Main directive. Find all the rules in the theory in the format (Name : Preconditions => Conclusion)
+ *  and then translate them in the standard format (rule([Name, Preconditions, Conclusions])).
+ *  During the process, clean them from the unallowed symbols (-, o, p).
+ */
 convertAllRules :- findall(RuleName, (RuleName : Preconditions => Effects), L), convertAllRules(L).
-
 convertAllRules([]).
 convertAllRules([H|T]) :- convertRule(H), convertAllRules(T).
 
-convertRule(RuleName) :- (RuleName : Preconditions => Effects), %write('Preconditions '),write(Preconditions), nl,
-							tuple_to_list(Preconditions, Lprecond),  tuple_to_list(Effects, Leffects),
-							%write('Leffects '),write(Leffects), nl,
-							check_negation(Lprecond, LprecondChecked),
-							%write('Leffects '), write(Leffects), nl,
-							check_negation_effects(Leffects, LeffectsChecked),
-							%write('LeffectsChecked '), write(LeffectsChecked), nl,
-							List = [RuleName, LprecondChecked, LeffectsChecked],
-							%write(' Assert '), write(List), nl,
-							assert(rule(List)).
 
+/*
+ *   Convert the given rule to the standard format
+ *   Example:
+ *   r2: followedGuidelines(X), doctor(X) => -liable(X)
+ *   rule([r2,[[followedGuidelines(X_e4149)],[doctor(X_e4149)]],[neg,liable(X_e4149)]]).
+ */
+convertRule(RuleName) :- (RuleName : Preconditions => Effects),
+                            tuple_to_list(Preconditions, Lprecond),
+                            tuple_to_list(Effects, Leffects),
+                            check_modifiers_in_list(Lprecond, LprecondChecked),
+                            check_modifiers_in_list(Leffects, LeffectsChecked),
+                            flatten_first_level(LeffectsChecked, LeffectsCheckedFlattened),
+                            List = [RuleName, LprecondChecked, LeffectsCheckedFlattened],
+                            assert(rule(List)).
+
+/*
+ *   Find negations(-), obligations(o), permissions(p) on a list of preconditions/effects and
+ *   raplace them with the assigned literal (neg, obl, perm)
+ */
+check_modifiers_in_list([], []).
+check_modifiers_in_list([H|T], L) :- H == [], L = [].
+check_modifiers_in_list([H|T], L) :- H \== [],
+                            check_modifiers(H, LH),
+                            check_modifiers_in_list(T, LT),
+                            append([LH], LT, L).
+
+check_modifiers([], []).
+check_modifiers(H, List) :-	functor(H, '-', _) -> H =.. L, replace('-', 'neg', L, Lf), List = Lf;
+                            functor(H, 'o', _) -> (arg(1, H, Arg), check_modifiers(Arg, Lobl), List = ['obl'|[Lobl]]);
+                            functor(H, 'p', _) -> (arg(1, H, Arg), check_modifiers(Arg, Lper), List = ['perm'|[Lper]]);
+                            List = [H].
+
+/*
+ *   Convert the given tuple to list
+ */
 tuple_to_list((A,B),L) :- tuple_to_list(A, La), tuple_to_list(B, Lb), append(La, Lb,L).
 tuple_to_list(A,[A]) :- nonvar(A), A \= (_ , _).
 
-check_negation([], []).
-check_negation([H|T], L) :- H == [], L=[].
-check_negation([H|T], L) :- H \== [], check_head_negation(H, ListHead),
-														check_negation(T,Ltail), append(ListHead, Ltail, L).
-
-check_head_negation([], []).
-check_head_negation(H, List) :-	functor(H, Name, _), %write('functor name '), write(Name), nl,
-																(Name = '-') -> H =.. L, replace('-', 'neg', L, Lf), List = [Lf] ; %List=[H],
-																(functor(H, Name, Arity), Name = 'o') -> (arg(1, H, Arg), check_head_negation(Arg, Lobl), List =[['obl'|Lobl]]) ;
-																(functor(H, Name, Arity), Name = 'p') -> (arg(1, H, Arg), check_head_negation(Arg, Lper), List =[['perm'|Lper]]) ;
-																List=[[H]].
-
-check_negation_effects([], []).
-check_negation_effects([H|T], L) :- H == [], L=[].
-check_negation_effects([H|T], L) :- H \== [], check_head_negation_effects(H, ListHead),
-														check_negation_effects(T,Ltail), append(ListHead, Ltail, L).
-check_head_negation_effects([], []).
-check_head_negation_effects(H, List) :-	functor(H, Name, _), %write('functor name '), write(Name), nl,
-																(Name = '-') -> H =.. L, replace('-', 'neg', L, Lf), List = Lf ; %List=[H],
-																(functor(H, Name, Arity), Name = 'o') -> (arg(1, H, Arg), check_head_negation(Arg, Lobl), List =['obl'|Lobl]) ;
-																(functor(H, Name, Arity), Name = 'p') -> (arg(1, H, Arg), check_head_negation(Arg, Lper), List =['perm'|Lper]) ;
-																List=[H].
-
+/*
+ *   Replace all the occurences of a given element with the given argument
+ */
 replace(_, _, [],[]).
 replace(O, R, [O|T], [R|T2]) :- replace(O, R, T, T2).
 replace(O, R, [H|T], [H|T2]) :- H \= O, replace(O, R, T, T2).
+
+
+flatten_first_level([X], X).
+flatten_first_level.
