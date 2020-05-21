@@ -7,7 +7,8 @@
 buildLabelSets ([In, No, Und]) :-
     buildArgumentationGraph([Arguments, Attacks, Supports] ),
     argumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]),
-    statementLabelling([IN, OUT, UND], [In, No, Und]), !.
+    argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]),
+    statementLabelling([BPIN, BPOUT, BPUND], [In, No, Und]), !.
 
 answerQuery(Goal, YesResult, NoResult, UndResult) :- convertAllRules,
 													 buildLabelSets([In, Out, Und]),

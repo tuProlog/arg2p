@@ -40,5 +40,3 @@ allAttacksOUT(A, OUT) :-
 oneAttackIN(A, IN) :-
     attack(B, A),
     member(B, IN), !.
-
-isEmptyList([]).

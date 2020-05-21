@@ -39,3 +39,6 @@ subtract([Head|Tail], L2, L3) :-
         subtract(Tail, L2, L3).
 subtract([Head|Tail1], L2, [Head|Tail3]) :-
         subtract(Tail1, L2, Tail3).
+
+%------------------------------------------------------------------
+isEmptyList([]).
