@@ -5,6 +5,14 @@
 % Year: 2019
 % ---------------------------------------------------------------
 
+enablePartialHBP :-
+    asserta(partialHBP).
+
+disablePartialHBP :-
+    retractall(partialHBP).
+
+% ========================================================================
+
 enableDebug :-
     asserta(debugArg2P).
 

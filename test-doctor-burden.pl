@@ -9,7 +9,8 @@ r1: harmed (X,Y), doctor(X) => liable(X).
 r2: followedGuidelines(X), doctor(X) => -liable(X).
 r3: say(E, harmed(X,Y)), expert(E) => harmed(X, Y).
 r4: say(E,followedGuidelines(X)), expert(E) => followedGuidelines(X).
-
+%
+%
 burdenOfProof([[neg, liable('Mary')]]).
 
 %sup(r1, r2).
