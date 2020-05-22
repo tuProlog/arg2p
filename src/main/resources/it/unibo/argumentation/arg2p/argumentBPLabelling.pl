@@ -5,13 +5,13 @@
 % ---------------------------------------------------------------
 
 argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
+    reifyBurdenOfProofs(IN, OUT, UND),
     (partialHBP, hbpBase(IN, OUT, UND, BPIN, BPOUT, BPUND));
     hbpComplete(IN, OUT, UND, BPIN, BPOUT, BPUND).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 hbpComplete(IN, OUT, UND, BPIN, BPOUT, BPUND) :-
-    write("Complete\n"),
     hbpBase(IN, OUT, UND, BaseIN, BaseOUT, BaseUND),
     labelArguments(BaseUND, BaseIN, BaseOUT, CompleteIN, CompleteOUT, CompleteUND),
     \+ (IN == CompleteIN, OUT == CompleteOUT, UND == CompleteUND),
@@ -22,7 +22,6 @@ hbpComplete(IN, OUT, UND, IN, OUT, UND).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 hbpBase(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
-    write("Base\n"),
     findall(A, ( member(A, UND), outCondition(A, OUT) ), NewListOUT),
     append(OUT, NewListOUT, NewOUT),
     findall(A, ( member(A, UND), inCondition(A, NewOUT, IN) ), NewListIN),
@@ -69,12 +68,28 @@ bpAttack(B, A) :-
     Checks Burden of proof membership
 */
 isInBurdenOfProof([_, _, Concl]) :-
-    burdenOfProof(Literals),
+    bp(Literals),
     member(Concl, Literals), !.
 
 /*
     Checks Burden of proof membership
 */
 isInBurdenOfProofStatement(Concl) :-
-    burdenOfProof(Literals),
+    bp(Literals),
     member(Concl, Literals), !.
+
+%====================================================================================
+
+reifyBurdenOfProofs(IN, OUT, UND) :-
+    extractConclusions(IN, OUT, UND, Conclusions),
+    computeBp(Conclusions).
+
+extractConclusions(IN, OUT, UND, SL) :-
+    findall(Conc, member([_, _, Conc], IN), In),
+    findall(Conc, member([_, _, Conc], OUT), Out),
+    findall(Conc, member([_, _, Conc], UND), Und),
+    appendLists([In, Out, Und], L),
+    sort(L, SL).
+
+computeBp(Conclusions).
+

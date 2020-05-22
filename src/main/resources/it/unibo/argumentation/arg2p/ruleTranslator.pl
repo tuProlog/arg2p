@@ -18,13 +18,30 @@ in(A, (_ , Cs)) :- in(A, Cs).
 
 /*
  *  Main directive. Find all the rules in the theory in the format (Name : Preconditions => Conclusion)
- *  and then translate them in the standard format (rule([Name, Preconditions, Conclusions])).
+ *  or (Name : Effects) and then if:
+ *  - It is a standard rule, translate it in the standard format (rule([Name, Preconditions, Conclusions]));
+ *  - It is a bp rule, translate it to (abstractBp([Effects]))
  *  During the process, clean them from the unallowed symbols (-, o, p).
  */
-convertAllRules :- findall(RuleName, (RuleName : Preconditions => Effects), L), convertAllRules(L).
-convertAllRules([]).
-convertAllRules([H|T]) :- convertRule(H), convertAllRules(T).
+convertAllRules :-
+    retractall(rule(_)), !,
+    retractall(abstractBp(_)), !,
+    retractall(bp(_, _)), !,
+    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), StandardRules),
+    findall([RuleName, Effect], (RuleName : Effect), SpecialRules),
+    append(StandardRules, SpecialRules, L),
+    convertAllRules(L).
 
+%=======================================================================================================================
+
+/*
+ *   Standard rules (RuleName : Preconditions => Effects)
+ *   Special rules (RuleName : Effects)
+ */
+
+convertAllRules([]).
+convertAllRules([[H,P,E]|T]) :- convertRule(H, P, E), convertAllRules(T).
+convertAllRules([[H,E]|T]) :- convertRule(H, E), convertAllRules(T).
 
 /*
  *   Convert the given rule to the standard format
@@ -32,7 +49,7 @@ convertAllRules([H|T]) :- convertRule(H), convertAllRules(T).
  *   r2: followedGuidelines(X), doctor(X) => -liable(X)
  *   rule([r2,[[followedGuidelines(X_e4149)],[doctor(X_e4149)]],[neg,liable(X_e4149)]]).
  */
-convertRule(RuleName) :- (RuleName : Preconditions => Effects),
+convertRule(RuleName, Preconditions, Effects) :-
                             tuple_to_list(Preconditions, Lprecond),
                             tuple_to_list(Effects, Leffects),
                             check_modifiers_in_list(Lprecond, LprecondChecked),
@@ -40,6 +57,22 @@ convertRule(RuleName) :- (RuleName : Preconditions => Effects),
                             flatten_first_level(LeffectsChecked, LeffectsCheckedFlattened),
                             List = [RuleName, LprecondChecked, LeffectsCheckedFlattened],
                             assert(rule(List)).
+
+/*
+ *   Convert the given special rule
+ *   Example:
+ *   b0: bp(-liable(X)).
+ *   abastractBp([[neg, liable(X_e4149)]]).
+ */
+convertRule(_, Effects) :-
+            functor(Effects, 'bp', _) ->
+                Effects =.. L,
+                removehead(L, LC),
+                check_modifiers_in_list(LC, Checked),
+                assert(abstractBp(Checked));
+            true.
+
+%=======================================================================================================================
 
 /*
  *   Find negations(-), obligations(o), permissions(p) on a list of preconditions/effects and
@@ -71,6 +104,7 @@ replace(_, _, [],[]).
 replace(O, R, [O|T], [R|T2]) :- replace(O, R, T, T2).
 replace(O, R, [H|T], [H|T2]) :- H \= O, replace(O, R, T, T2).
 
-
 flatten_first_level([X], X).
 flatten_first_level.
+
+removehead([_|Tail], Tail).
