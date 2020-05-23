@@ -26,7 +26,7 @@ in(A, (_ , Cs)) :- in(A, Cs).
 convertAllRules :-
     retractall(rule(_)), !,
     retractall(abstractBp(_)), !,
-    retractall(bp(_, _)), !,
+    retractall(bp(_)), !,
     findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), StandardRules),
     findall([RuleName, Effect], (RuleName : Effect), SpecialRules),
     append(StandardRules, SpecialRules, L),
