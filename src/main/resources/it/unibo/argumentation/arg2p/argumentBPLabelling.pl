@@ -95,7 +95,10 @@ computeBp(Conclusions) :-
     abstractBp(AbstractBp),
     fillTemplate(AbstractBp, Conclusions, R),
     \+ bp(R),
-    asserta(bp(R)).
+    asserta(bp(R)),
+    computeBp(Conclusions).
+
+computeBp(_).
 
 /*
     Fill the template (first parameter) using predicates belonging to the second list (second parameter)
