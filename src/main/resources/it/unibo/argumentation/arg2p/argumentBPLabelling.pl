@@ -101,8 +101,8 @@ computeBp(Conclusions) :-
 computeBp(_).
 
 /*
-    Fill the template (first parameter) using predicates belonging to the second list (second parameter)
+    Fill the template (first parameter) using predicates belonging
+    to the second list (second parameter)
 */
 fillTemplate([], _, []).
-fillTemplate([H|T1], [H|T2], [H|R]) :- fillTemplate(T1, T2, R).
-fillTemplate([H1|T1], [H2|T2], R) :- H1 \= H2, fillTemplate([H1|T1], T2, R).
+fillTemplate([H|T], C, [H|R]) :- member(H, C), fillTemplate(T, C, R).
