@@ -2,6 +2,7 @@ plugins {
     java
     `java-library`
     application
+    eclipse
 }
 
 repositories {
