@@ -9,14 +9,12 @@
 
 %========================================================================================
 
-% Problemi di completezza
-
 r0 : -c(X) => a(X).
 r1 : a(X) => c(X).
 r2 : [] => -a('Pippo').
 r3 : [] => -c('Pippo').
 
-b0 : bp(-p(X)).
+b0 : bp(-a(X)).
 
 test :-
     convertAllRules,

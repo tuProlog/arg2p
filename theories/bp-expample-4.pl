@@ -21,7 +21,7 @@ b1 : bp(b(X)).
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),
-    write('==============================================> IN '),write('\n'),
+    write('\n==============================================> IN '),write('\n'),
     writeList(In),write('\n'),
     write('==============================================> OUT '),write('\n'),
     writeList(Out),write('\n'),

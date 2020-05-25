@@ -16,8 +16,6 @@
 
 %========================================================================================
 
-% Il vincolo di superiorità non ci va, problemi di completezza
-
 r1: [] => killed('Pippo').
 r2: [] => intention('Pippo').
 r3: [] => threatWithWeapon('Pippo').
@@ -27,7 +25,7 @@ r6: -threatWithWeapon(X) => -selfDefence(X).
 r7: selfDefence(X) => -murder(X).
 r8: killed(X), intention(X) => murder(X).
 
-sup(r3, r4).
+sup(r7, r8).
 
 b0 : bp(killed(X), intention(X), -selfDefence(X)).
 
