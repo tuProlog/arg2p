@@ -40,19 +40,17 @@ hbpComplete(IN, OUT, UND, IN, OUT, UND).
 %(c) A is labelled UND otherwise.
 
 hbpPartial(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
-    findall(A, ( member(A, UND), partialInCondition(A, IN, OUT) ), NewListIN),
-%    write('\nNEW IN\n'),
-%    writeList(NewListIN),
-    append(IN, NewListIN, NewIN),
-    findall(A, ( member(A, UND), partialOutCondition(A, NewListIN, OUT) ), NewListOUT),
-    append(OUT, NewListOUT, NewOUT),
-%    write('\nNEW OUT\n'),
-%    writeList(NewListOUT),
-    append(NewListIN, NewListOUT, NewLabelledArguments),
-    \+ isEmptyList(NewLabelledArguments),
-    subtract(UND, NewLabelledArguments, NewUnd),
-    hbpPartial(NewIN, NewOUT, NewUnd, ResultIN, ResultOUT, ResultUND).
-
+    member(A, UND),
+    partialInCondition(A, IN, OUT),
+    append(IN, [A], NewIN),
+    subtract(UND, [A], NewUnd),
+    hbpPartial(NewIN, OUT, NewUnd, ResultIN, ResultOUT, ResultUND).
+hbpPartial(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
+    member(A, UND),
+    partialOutCondition(A, IN, OUT),
+    append(OUT, [A], NewOUT),
+    subtract(UND, [A], NewUnd),
+    hbpPartial(IN, NewOUT, NewUnd, ResultIN, ResultOUT, ResultUND).
 hbpPartial(IN, OUT, UND, IN, OUT, UND).
 
 /*
@@ -89,32 +87,23 @@ partialInCondition(A, IN, OUT) :-
     checkComplementArguments(CA, OUT),
     checkSubArguments(A, IN).
 
-% All the arguments with this conclusion are in the Set (If no arguments returns true)
-checkComplementArguments(Conclusion, Set) :-
-    \+ (argument([A, B, Conclusion]), \+ member([A, B, Conclusion], Set)).
-
-% All the sub-arguments are in the Set (If no sub-arguments returns true)
-checkSubArguments(Argument, Set) :-
-    \+ (support(Subargument, Argument), \+ member(Subargument, Set)).
-
 %==============================================================================
 % COMPLETE LABELLING
 %==============================================================================
 
 completeLabelling(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
-   findall(A, ( member(A, UND), completeIn(A, IN, OUT) ), NewListIN),
-   append(IN, NewListIN, NewIN),
-   findall(A, ( member(A, UND), completeOut(A, NewIN, OUT) ), NewListOUT),
-   append(OUT, NewListOUT, NewOUT),
-
-   append(NewListIN, NewListOUT, NewLabelledArguments),
-   \+ isEmptyList(NewLabelledArguments),
-
-   subtract(UND, NewLabelledArguments, UndPlus1),
-   completeLabelling(NewIN, NewOUT, UndPlus1, ResultIN, ResultOUT, ResultUND).
-
+    member(A, UND),
+    completeIn(A, IN, OUT),
+    append(IN, [A], NewIN),
+    subtract(UND, [A], NewUnd),
+    completeLabelling(NewIN, OUT, NewUnd, ResultIN, ResultOUT, ResultUND).
+completeLabelling(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
+    member(A, UND),
+    completeOut(A, IN, OUT),
+    append(OUT, [A], NewOUT),
+    subtract(UND, [A], NewUnd),
+    completeLabelling(IN, NewOUT, NewUnd, ResultIN, ResultOUT, ResultUND).
 completeLabelling(IN, OUT, UND, IN, OUT, UND).
-
 
 completeIn(A, _, OUT) :- checkOutAttackers(A, OUT).
 /*
@@ -161,6 +150,15 @@ bpAttack(A, B) :-
     attack(A, B),
     complement(A, CA),
     isInBurdenOfProof(CA).
+
+% All the arguments with this conclusion are in the Set (If no arguments returns true)
+checkComplementArguments(Conclusion, Set) :-
+    \+ (argument([A, B, Conclusion]), \+ member([A, B, Conclusion], Set)).
+
+% All the sub-arguments are in the Set (If no sub-arguments returns true)
+checkSubArguments(Argument, Set) :-
+    \+ (support(Subargument, Argument), \+ member(Subargument, Set)).
+
 
 %==============================================================================
 % BURDEN OF PROOF REIFICATION
