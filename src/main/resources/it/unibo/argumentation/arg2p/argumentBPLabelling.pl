@@ -43,90 +43,27 @@ hbpComplete(IN, OUT, UND, IN, OUT, UND).
 %(b) A is labelled OUT iff an attacker of A is IN;
 %(c) A is labelled UND otherwise.
 
-hbpWrapper([], IN_STAR, OUT_STAR, UND_STAR, IN_STAR, OUT_STAR, UND_STAR).
-hbpWrapper(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
-    write('\nOK'),
+partialHBPLabelling([], IN_STAR, OUT_STAR, UND_STAR, IN_STAR, OUT_STAR, UND_STAR).
+partialHBPLabelling(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
     member(A, UND),
     checkHbpWrapper(A, UND, IN_STAR, OUT_STAR, UND_STAR, [], NewUnd, TempIN, TempOUT, TempUND),
-    hbpWrapper(NewUnd, TempIN, TempOUT, TempUND, ResultIN, ResultOUT, ResultUND).
+    partialHBPLabelling(NewUnd, TempIN, TempOUT, TempUND, ResultIN, ResultOUT, ResultUND).
 
-resolveDependencies([], UND, IN_STAR, OUT_STAR, UND_STAR, _, UND, IN_STAR, OUT_STAR, UND_STAR).
-resolveDependencies([H|T], UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, ResUND, ResIN_STAR, ResOUT_STAR, ResUND_STAR) :-
-    member(H, RESOLVING),
-    resolveDependencies(T, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, ResUND, ResIN_STAR, ResOUT_STAR, ResUND_STAR).
-resolveDependencies([H|T], UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, ResUND, ResIN_STAR, ResOUT_STAR, ResUND_STAR) :-
-    append(RESOLVING, [H], NR),
-    write('\nResolving list : '), write(NR),
-    write('\nResolving for : '), write(H),
-    checkHbpWrapper(H, UND, IN_STAR, OUT_STAR, UND_STAR, NR, RUND, RINS, ROUTS, RUNDS),
-    resolveDependencies(T, RUND, RINS, ROUTS, RUNDS, NR, ResUND, ResIN_STAR, ResOUT_STAR, ResUND_STAR).
-
-checkHbpWrapper(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
+evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
+    support(Sub, A),
+    member(Sub, UND),
+    \+ member(Sub, RESOLVING),
+    append(RESOLVING, [Sub], NR),
+    evaluateHbpArgument(Sub, UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
+evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
     complement(A, CA),
-    findall(Sub, ( support(Sub, A), member(Sub, UND) ), R),
-    findall([X, Y, CA], ( argument([X, Y, CA]), member([X, Y, CA], UND) ), P),
-    append(P, R, PR),
-    write('\nResolving dependencies for argument: '), write(A),
-    resolveDependencies(PR, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, RUND, RINS, ROUTS, RUNDS),
-    write('\nChecking argument: '), write(A),
-    checkHbp(A, RUND, RINS, ROUTS, RUNDS, NewUnd, TempIN, TempOUT, TempUND).
-
-checkHbp(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
-    complement(A, CA),
-    isInBurdenOfProof(CA),
-    \+ ( support(_, A), checkSubArguments(A, OUT_STAR) ),
-    write('\nAdding argument: '), write(A), write(' to IN* (2.a.i)'),
-    append(IN_STAR, [A], Res_INS),
-    subtract(UND, [A], Res_UND).
-
-checkHbp(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
-    complement(A, CA),
-    checkComplementArguments(CA, OUT_STAR),
-    checkSubArguments(A, IN_STAR),
-    write('\nAdding argument: '), write(A), write(' to IN* (2.a.ii)'),
-    append(IN_STAR, [A], Res_INS),
-    subtract(UND, [A], Res_UND).
-
-checkHbp(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
-    attack(B, A),
-    member(B, IN_STAR), !,
-    write('\nAdding argument: '), write(A), write(' to OUT* (2.b)'),
-    append(OUT_STAR, [A], Res_OUTS),
-    subtract(UND, [A], Res_UND).
-
-checkHbp(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, OUT_STAR, Res_UNDS) :-
-    write('\nAdding argument: '), write(A), write(' to UND* (2.c)'),
-    append(UND_STAR, [A], Res_UNDS),
-    subtract(UND, [A], Res_UND).
-
-
-%hbpPartial(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
-%    member(A, UND),
-%    partialInCondition(A, IN_STAR, OUT_STAR, UND),
-%    append(IN_STAR, [A], NewIN),
-%    subtract(UND, [A], NewUnd),
-%    hbpPartial(NewUnd, NewIN, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND).
-%hbpPartial(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
-%    member(A, UND),
-%    partialOutCondition(A, IN_STAR, OUT_STAR, UND),
-%    append(OUT_STAR, [A], NewOUT),
-%    subtract(UND, [A], NewUnd),
-%    hbpPartial(NewUnd, IN_STAR, NewOUT, UND_STAR, ResultIN, ResultOUT, ResultUND).
-%hbpPartial(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
-%    member(A, UND),
-%    append(UND_STAR, [A], NewUndStar),
-%    subtract(UND, [A], NewUnd),
-%    write('\nAdding argument: '), write(A), write(' to UND* (2.c)'),
-%    hbpPartial(NewUnd, IN_STAR, OUT_STAR, NewUndStar, ResultIN, ResultOUT, ResultUND).
-%hbpPartial(_, IN_STAR, OUT_STAR, UND_STAR, IN_STAR, OUT_STAR, UND_STAR).
-
-/*
-    A is labelled OUT iff an attacker of A is IN
-*/
-partialOutCondition(A, IN_STAR, _, _) :-
-    attack(B, A),
-    member(B, IN_STAR), !,
-    write('\nAdding argument: '), write(A), write(' to OUT* (2.b)').
+    argument([X, Y, CA]),
+    member([X, Y, CA], UND),
+    \+ member([X, Y, CA], RESOLVING),
+    append(RESOLVING, [[X, Y, CA]], NR),
+    evaluateHbpArgument([X, Y, CA], UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
+evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, _, NewUnd, TempIN, TempOUT, TempUND) :-
+    checkHbp(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
 /*
     A is labelled IN iff conc(A) = (compl p) and BP(p) and no subargument A1 that belongs
     to DirectSub(A) is labelled OUT
@@ -135,14 +72,13 @@ partialOutCondition(A, IN_STAR, _, _) :-
     and my argument goes against that in BP,
     then my argument is true.
 */
-partialInCondition(A, _, OUT_STAR, UND) :-
+applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
     complement(A, CA),
     isInBurdenOfProof(CA),
-    write('\nChecking member: '), write(A),
-    \+ ( support(Sub, A), member(Sub, UND) ),
-    write('\nNo UND subarguments'),
     \+ ( support(_, A), checkSubArguments(A, OUT_STAR) ),
-    write('\nAdding argument: '), write(A), write(' to IN* (2.a.i)').
+    write('\nAdding argument: '), write(A), write(' to IN* (2.a.i)'),
+    append(IN_STAR, [A], Res_INS),
+    subtract(UND, [A], Res_UND).
 /*
     A is labelled IN iff conc(A) = compl p, every UND-labelled argument B such that conc(B) = p is OUT, and
     every subargument A1 that belongs to DirectSub(A) is labelled IN
@@ -151,11 +87,29 @@ partialInCondition(A, _, OUT_STAR, UND) :-
     and all my direct sub-arguments are true,
     then my argument is true
 */
-partialInCondition(A, IN_STAR, OUT_STAR, _) :-
+applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
     complement(A, CA),
     checkComplementArguments(CA, OUT_STAR),
     checkSubArguments(A, IN_STAR),
-    write('\nAdding argument: '), write(A), write(' to IN* (2.a.ii)').
+    write('\nAdding argument: '), write(A), write(' to IN* (2.a.ii)'),
+    append(IN_STAR, [A], Res_INS),
+    subtract(UND, [A], Res_UND).
+/*
+    A is labelled OUT iff an attacker of A is IN
+*/
+applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
+    attack(B, A),
+    member(B, IN_STAR), !,
+    write('\nAdding argument: '), write(A), write(' to OUT* (2.b)'),
+    append(OUT_STAR, [A], Res_OUTS),
+    subtract(UND, [A], Res_UND).
+/*
+    A is labelled UND iff no other choices are possible
+*/
+applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, OUT_STAR, Res_UNDS) :-
+    write('\nAdding argument: '), write(A), write(' to UND* (2.c)'),
+    append(UND_STAR, [A], Res_UNDS),
+    subtract(UND, [A], Res_UND).
 
 %==============================================================================
 % COMPLETE LABELLING
