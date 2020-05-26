@@ -13,7 +13,7 @@ disablePartialHBP :-
 argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
     reifyBurdenOfProofs(IN, OUT, UND),
     % write('\n=========================================>DEMONSTRATION'),
-    (partialHBP, hbpWrapper(UND, IN, OUT, [], BPIN, BPOUT, BPUND));
+    (partialHBP, partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND));
     hbpComplete(IN, OUT, UND, BPIN, BPOUT, BPUND).
     % write('\n=====================================>END DEMONSTRATION').
 
@@ -22,7 +22,7 @@ argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
 %==============================================================================
 
 hbpComplete(IN, OUT, UND, BPIN, BPOUT, BPUND) :-
-    hbpWrapper(UND, IN, OUT, [], BaseIN, BaseOUT, BaseUND),
+    partialHBPLabelling(UND, IN, OUT, [], BaseIN, BaseOUT, BaseUND),
     % write('\nPartial graph completation start'),
     completeLabelling(BaseIN, BaseOUT, BaseUND, CompleteIN, CompleteOUT, CompleteUND),
     % write('\nPartial graph completation end'),
@@ -46,24 +46,33 @@ hbpComplete(IN, OUT, UND, IN, OUT, UND).
 partialHBPLabelling([], IN_STAR, OUT_STAR, UND_STAR, IN_STAR, OUT_STAR, UND_STAR).
 partialHBPLabelling(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
     member(A, UND),
-    checkHbpWrapper(A, UND, IN_STAR, OUT_STAR, UND_STAR, [], NewUnd, TempIN, TempOUT, TempUND),
+    evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, [], NewUnd, TempIN, TempOUT, TempUND),
     partialHBPLabelling(NewUnd, TempIN, TempOUT, TempUND, ResultIN, ResultOUT, ResultUND).
 
-evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
+findonesubarg(UND, A, Sub) :-
     support(Sub, A),
-    member(Sub, UND),
+    member(Sub, UND).
+
+findonecompl(UND, A, [X, Y, CA]) :-
+    complement(A, CA),
+    argument([X, Y, CA]),
+    member([X, Y, CA], UND).
+
+evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
+    write('\nEval sub: '), write(A),
+    findonesubarg(UND, A, Sub),
     \+ member(Sub, RESOLVING),
     append(RESOLVING, [Sub], NR),
     evaluateHbpArgument(Sub, UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
 evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
-    complement(A, CA),
-    argument([X, Y, CA]),
-    member([X, Y, CA], UND),
-    \+ member([X, Y, CA], RESOLVING),
-    append(RESOLVING, [[X, Y, CA]], NR),
-    evaluateHbpArgument([X, Y, CA], UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
+    write('\nEval compl: '), write(A),
+    findonecompl(UND, A, Compl),
+    \+ member(Compl, RESOLVING),
+    append(RESOLVING, [Compl], NR),
+    evaluateHbpArgument(Compl, UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
 evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, _, NewUnd, TempIN, TempOUT, TempUND) :-
-    checkHbp(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
+    write('\nEval arg: '), write(A),
+    applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
 /*
     A is labelled IN iff conc(A) = (compl p) and BP(p) and no subargument A1 that belongs
     to DirectSub(A) is labelled OUT
