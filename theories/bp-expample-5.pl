@@ -16,10 +16,12 @@ r3 : [] => -c('Pippo').
 
 b0 : bp(-a(X)).
 
+% partialHBP.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),
-    write('==============================================> IN '),write('\n'),
+    write('\n==============================================> IN '),write('\n'),
     writeList(In),write('\n'),
     write('==============================================> OUT '),write('\n'),
     writeList(Out),write('\n'),

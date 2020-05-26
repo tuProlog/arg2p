@@ -18,6 +18,8 @@ r3 : -a(X) => -b(X).
 b0 : bp(-a(X)).
 b1 : bp(b(X)).
 
+% partialHBP.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),

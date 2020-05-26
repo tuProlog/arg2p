@@ -26,6 +26,8 @@ r6 : -negligent(X) => -liable(X).
 b0 : bp(-negligent(X)).
 % b1 : bp(-guidelines(X)).
 
+% partialHBP.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),
