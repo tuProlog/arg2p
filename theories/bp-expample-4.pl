@@ -20,6 +20,8 @@ b1 : bp(b(X)).
 
 % partialHBP.
 
+demonstration.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),

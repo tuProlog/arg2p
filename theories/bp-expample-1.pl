@@ -20,6 +20,8 @@ r5 : [] => -s('Pippo').
 
 sup(r2, r3).
 
+demonstration.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),

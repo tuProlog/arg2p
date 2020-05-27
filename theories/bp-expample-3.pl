@@ -31,6 +31,8 @@ b0 : bp(killed(X), intention(X), -selfDefence(X)).
 
 % partialHBP.
 
+demonstration.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),

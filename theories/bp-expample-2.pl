@@ -28,6 +28,8 @@ b1 : bp(-guidelines(X)).
 
 partialHBP.
 
+demonstration.
+
 test :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),
