@@ -10,18 +10,21 @@ enablePartialHBP :-
 disablePartialHBP :-
     retractall(partialHBP).
 
-writeDemonstration(X) :-
+writeDemonstration([]) :-
     demonstration,
-    write(X).
-
+    write('\n').
+writeDemonstration([X|T]) :-
+    demonstration,
+    write(X),
+    writeDemonstration(T).
 writeDemonstration(_).
 
 argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
     reifyBurdenOfProofs(IN, OUT, UND),
-    writeDemonstration('\n=========================================>DEMONSTRATION'),
+    writeDemonstration(['=========================================>DEMONSTRATION']),
     ((partialHBP, partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND));
     hbpComplete(go, IN, OUT, UND, BPIN, BPOUT, BPUND)),
-    writeDemonstration('\n=====================================>END DEMONSTRATION').
+    writeDemonstration(['=====================================>END DEMONSTRATION']).
 
 %==============================================================================
 % COMPLETE HBP LABELLING
@@ -29,7 +32,7 @@ argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
 
 hbpComplete(stop, IN, OUT, UND, IN, OUT, UND).
 hbpComplete(_, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
-    writeDemonstration('\n======================================================>'),
+    writeDemonstration(['======================================================>']),
     partialHBPLabelling(UND, IN, OUT, [], BaseIN, BaseOUT, BaseUND),
     completeLabelling(BaseIN, BaseOUT, BaseUND, CompleteIN, CompleteOUT, CompleteUND),
     stopCondition(FLAG, IN, CompleteIN, OUT, CompleteOUT, UND, CompleteUND),
@@ -53,27 +56,43 @@ stopCondition(go, _, _, _, _, _, _).
 partialHBPLabelling([], IN_STAR, OUT_STAR, UND_STAR, IN_STAR, OUT_STAR, UND_STAR).
 partialHBPLabelling(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
     member(A, UND),
+    writeDemonstration(['Evaluating ', A]),
     evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, [], NewUnd, TempIN, TempOUT, TempUND),
     partialHBPLabelling(NewUnd, TempIN, TempOUT, TempUND, ResultIN, ResultOUT, ResultUND).
 
 evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
     findonesubarg(UND, A, Sub),
+    writeDemonstration(['Sub -> ', Sub, ' of ', A]),
     \+ member(Sub, RESOLVING),
     append(RESOLVING, [Sub], NR),
     evaluateHbpArgument(Sub, UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
 evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, _, NewUnd, TempIN, TempOUT, TempUND) :-
-    applyHbpRulesIn(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
+    applyHbpRulesOne(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
+
 evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
     findonecompl(UND, A, Compl),
+    writeDemonstration(['Compl -> ', Compl, ' of ', A]),
     \+ member(Compl, RESOLVING),
     append(RESOLVING, [Compl], NR),
     evaluateHbpArgument(Compl, UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
 evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, _, NewUnd, TempIN, TempOUT, TempUND) :-
-    applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
+    applyHbpRulesTwo(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
+
+%evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, TempOUT, TempUND) :-
+%    findoneattack(UND, A, Att),
+%    \+ member(Att, RESOLVING),
+%    append(RESOLVING, [Att], NR),
+%    evaluateHbpArgument(Att, UND, IN_STAR, OUT_STAR, UND_STAR, NR, NewUnd, TempIN, TempOUT, TempUND).
+%evaluateHbpArgument(A, UND, IN_STAR, OUT_STAR, UND_STAR, _, NewUnd, TempIN, TempOUT, TempUND) :-
+%    applyHbpRulesThree(A, UND, IN_STAR, OUT_STAR, UND_STAR, NewUnd, TempIN, TempOUT, TempUND).
 
 findonesubarg(UND, A, Sub) :-
     support(Sub, A),
     member(Sub, UND).
+
+%findoneattack(UND, A, Att) :-
+%    attack(Att, A),
+%    member(Att, UND).
 
 findonecompl(UND, A, [X, Y, CA]) :-
     complement(A, CA),
@@ -88,14 +107,14 @@ findonecompl(UND, A, [X, Y, CA]) :-
     and my argument goes against that in BP,
     then my argument is true.
 */
-applyHbpRulesIn(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
+applyHbpRulesOne(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
     complement(A, CA),
     isInBurdenOfProof(CA),
     \+ ( support(_, A), checkSubArguments(A, OUT_STAR) ),
-    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to IN* (2.a.i)'),
+    writeDemonstration(['Adding argument: ', A, ' to IN* (2.a.i)']),
     append(IN_STAR, [A], Res_INS),
     subtract(UND, [A], Res_UND).
-applyHbpRulesIn(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
+applyHbpRulesOne(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
     outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR).
 /*
     A is labelled IN iff conc(A) = compl p, every UND-labelled argument B such that conc(B) = p is OUT, and
@@ -105,29 +124,42 @@ applyHbpRulesIn(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS,
     and all my direct sub-arguments are true,
     then my argument is true
 */
-applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
+applyHbpRulesTwo(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
     complement(A, CA),
     checkComplementArguments(CA, OUT_STAR),
     checkSubArguments(A, IN_STAR),
-    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to IN* (2.a.ii)'),
+    writeDemonstration(['Adding argument: ', A, ' to IN* (2.a.ii)']),
     append(IN_STAR, [A], Res_INS),
     subtract(UND, [A], Res_UND).
-applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
+applyHbpRulesTwo(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
     outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR).
+
+
+%applyHbpRulesThree(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, UND_STAR) :-
+%    checkAttackArguments(A, IN_STAR),
+%    checkSubArguments(A, IN_STAR),
+%    complement(A, CA),
+%    checkComplementArgumentsBp(CA),
+%    writeDemonstration(['Adding argument: ', A, ' to IN* (2.a.iii)']),
+%    append(IN_STAR, [A], Res_INS),
+%    subtract(UND, [A], Res_UND).
+%applyHbpRulesThree(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
+%    outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR).
 /*
     A is labelled UND iff no other choices are possible
 */
-applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, OUT_STAR, Res_UNDS) :-
-    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to UND* (2.c)'),
+applyHbpRulesTwo(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, OUT_STAR, Res_UNDS) :-
+    writeDemonstration(['Adding argument: ', A, ' to UND* (2.c)']),
     append(UND_STAR, [A], Res_UNDS),
     subtract(UND, [A], Res_UND).
+
 /*
     A is labelled OUT iff an attacker of A is IN
 */
 outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
     attack(B, A),
     member(B, IN_STAR), !,
-    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to OUT* (2.b)'),
+    writeDemonstration(['Adding argument: ', A, ' to OUT* (2.b)']),
     append(OUT_STAR, [A], Res_OUTS),
     subtract(UND, [A], Res_UND).
 
@@ -137,13 +169,13 @@ outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STA
 
 completeLabelling(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
     findoneIn(IN, OUT, UND, A),
-    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to IN* (4.4)'),
+    writeDemonstration(['Adding argument: ', A, ' to IN* (4.4)']),
     append(IN, [A], NewIN),
     subtract(UND, [A], NewUnd),
     completeLabelling(NewIN, OUT, NewUnd, ResultIN, ResultOUT, ResultUND).
 completeLabelling(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
     findoneOut(IN, OUT, UND, A),
-    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to OUT* (4.4)'),
+    writeDemonstration(['Adding argument: ', A, ' to OUT* (4.4)']),
     append(OUT, [A], NewOUT),
     subtract(UND, [A], NewUnd),
     completeLabelling(IN, NewOUT, NewUnd, ResultIN, ResultOUT, ResultUND).
@@ -201,7 +233,9 @@ isInBurdenOfProof(Concl) :-
 % All the arguments with this conclusion are in the Set (If no arguments returns true)
 checkComplementArguments(Conclusion, Set) :-
     \+ (argument([A, B, Conclusion]), \+ member([A, B, Conclusion], Set)).
-
+% All the attackers are not in the Set (If no arguments returns true)
+checkAttackArguments(A, IN_STAR) :-
+    \+ (attack(B, A), member(B, IN_STAR)).
 % All the sub-arguments are in the Set (If no sub-arguments returns true)
 checkSubArguments(Argument, Set) :-
     \+ (support(Subargument, Argument), \+ member(Subargument, Set)).
