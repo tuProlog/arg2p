@@ -28,14 +28,14 @@ argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
 %==============================================================================
 
 hbpComplete(stop, IN, OUT, UND, IN, OUT, UND).
-hbpComplete(G, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
+hbpComplete(_, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
+    writeDemonstration('\n======================================================>'),
     partialHBPLabelling(UND, IN, OUT, [], BaseIN, BaseOUT, BaseUND),
     completeLabelling(BaseIN, BaseOUT, BaseUND, CompleteIN, CompleteOUT, CompleteUND),
-    (IN == CompleteIN, OUT == CompleteOUT, UND == CompleteUND) ->
-        hbpComplete(stop, CompleteIN, CompleteOUT, CompleteUND, BPIN, BPOUT, BPUND);
-        hbpComplete(G, CompleteIN, CompleteOUT, CompleteUND, BPIN, BPOUT, BPUND).
+    stopCondition(FLAG, IN, CompleteIN, OUT, CompleteOUT, UND, CompleteUND),
+    hbpComplete(FLAG, CompleteIN, CompleteOUT, CompleteUND, BPIN, BPOUT, BPUND).
 
-stopCondition(stop, IN, CompleteIN, OUT, CompleteOUT, UND, CompleteUND).
+stopCondition(stop, IN, IN, OUT, OUT, UND, UND).
 stopCondition(go, _, _, _, _, _, _).
 
 %==============================================================================
@@ -92,7 +92,7 @@ applyHbpRulesIn(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR,
     complement(A, CA),
     isInBurdenOfProof(CA),
     \+ ( support(_, A), checkSubArguments(A, OUT_STAR) ),
-    writeDemonstration('\nAdding argument: '), write(A), write(' to IN* (2.a.i)'),
+    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to IN* (2.a.i)'),
     append(IN_STAR, [A], Res_INS),
     subtract(UND, [A], Res_UND).
 applyHbpRulesIn(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
@@ -109,7 +109,7 @@ applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, Res_INS, OUT_STAR, U
     complement(A, CA),
     checkComplementArguments(CA, OUT_STAR),
     checkSubArguments(A, IN_STAR),
-    writeDemonstration('\nAdding argument: '), write(A), write(' to IN* (2.a.ii)'),
+    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to IN* (2.a.ii)'),
     append(IN_STAR, [A], Res_INS),
     subtract(UND, [A], Res_UND).
 applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
@@ -118,7 +118,7 @@ applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, U
     A is labelled UND iff no other choices are possible
 */
 applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, OUT_STAR, Res_UNDS) :-
-    writeDemonstration('\nAdding argument: '), write(A), write(' to UND* (2.c)'),
+    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to UND* (2.c)'),
     append(UND_STAR, [A], Res_UNDS),
     subtract(UND, [A], Res_UND).
 /*
@@ -127,7 +127,7 @@ applyHbpRules(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, OUT_STAR, R
 outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STAR) :-
     attack(B, A),
     member(B, IN_STAR), !,
-    writeDemonstration('\nAdding argument: '), write(A), write(' to OUT* (2.b)'),
+    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to OUT* (2.b)'),
     append(OUT_STAR, [A], Res_OUTS),
     subtract(UND, [A], Res_UND).
 
@@ -137,13 +137,13 @@ outRule(A, UND, IN_STAR, OUT_STAR, UND_STAR, Res_UND, IN_STAR, Res_OUTS, UND_STA
 
 completeLabelling(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
     findoneIn(IN, OUT, UND, A),
-    writeDemonstration('\nAdding argument: '), write(A), write(' to IN* (4.4)'),
+    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to IN* (4.4)'),
     append(IN, [A], NewIN),
     subtract(UND, [A], NewUnd),
     completeLabelling(NewIN, OUT, NewUnd, ResultIN, ResultOUT, ResultUND).
 completeLabelling(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
     findoneOut(IN, OUT, UND, A),
-    writeDemonstration('\nAdding argument: '), write(A), write(' to OUT* (4.4)'),
+    writeDemonstration('\nAdding argument: '), writeDemonstration(A), writeDemonstration(' to OUT* (4.4)'),
     append(OUT, [A], NewOUT),
     subtract(UND, [A], NewUnd),
     completeLabelling(IN, NewOUT, NewUnd, ResultIN, ResultOUT, ResultUND).
