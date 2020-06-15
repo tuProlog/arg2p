@@ -1,35 +1,37 @@
 % Medical malpractice (Example 3)
 
-% r1: ⇒ ¬guidelines 
+% r1: ⇒ ¬guidelines
 % r2: ⇒ guidelines
-% r3: ¬guidelines ⇒ negligent 
+% r3: ¬guidelines ⇒ negligent
 % r4: guidelines ⇒ ¬negligent
-% r5: negligent ⇒ liable 
+% r5: negligent ⇒ liable
 % r6: ¬negligent ⇒ ¬liable
 
 % Example 5
 % BP(¬negligent)
 
 % Example 8
-% BP(¬negligent) 
+% BP(¬negligent)
 % BP(¬guidelines)
 
 %========================================================================================
 
-r1 : [] => -guidelines('Pippo'). 
-r2 : [] => guidelines('Pippo').
+r1 : [] => -guidelines('Mary').
+r2 : [] => guidelines('Mary').
 r3 : -guidelines(X) => negligent(X).
 r4 : guidelines(X) => -negligent(X).
-r5 : negligent(X) => liable(X). 
+r5 : negligent(X) => liable(X).
 r6 : -negligent(X) => -liable(X).
 
 bp(-negligent(X)).
-% bp(-guidelines(X)).
+%bp(-guidelines(X)).
 
 partialHBP.
 demonstration.
 
-test :-
+% answerQuery(liable(X), Yes, No, Und).
+
+labelSets :-
     convertAllRules,
     buildLabelSets([In, Out, Und]),
     write('\n==============================================> IN '),write('\n'),
@@ -37,4 +39,4 @@ test :-
     write('==============================================> OUT '),write('\n'),
     writeList(Out),write('\n'),
     write('==============================================> UND '),write('\n'),
-	writeList(Und),write('\n').
+    writeList(Und),write('\n').
