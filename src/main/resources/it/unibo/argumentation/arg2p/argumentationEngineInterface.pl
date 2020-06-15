@@ -32,8 +32,7 @@ printLabelSets :-
     write('==============================================> UND '),write('\n'),
     writeList(UND),write('\n')
 
-answerQuery(Goal, YesResult, NoResult, UndResult) :- convertAllRules,
-													 buildLabelSets([In, Out, Und], [IN, OUT, UND]),
+answerQuery(Goal, YesResult, NoResult, UndResult) :- buildLabelSets([In, Out, Und], [IN, OUT, UND]),
 													 findall(Goal, answerSingleQuery(Goal, In), YesResult),
 													 findall(Goal, answerSingleQuery(Goal, Out), NoResult),
 													 findall(Goal, answerSingleQuery(Goal, Und), UndResult).
