@@ -30,7 +30,7 @@ printLabelSets :-
     write('==============================================> OUT '),write('\n'),
     writeList(OUT),write('\n'),
     write('==============================================> UND '),write('\n'),
-    writeList(UND),write('\n')
+    writeList(UND),write('\n').
 
 answerQuery(Goal, YesResult, NoResult, UndResult) :- buildLabelSets([In, Out, Und], [IN, OUT, UND]),
 													 findall(Goal, answerSingleQuery(Goal, In), YesResult),
