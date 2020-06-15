@@ -5,6 +5,7 @@
 % ---------------------------------------------------------------
     
 buildLabelSets ([In, No, Und]) :-
+    convertAllRules,
     buildArgumentationGraph([Arguments, Attacks, Supports] ),
     argumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]),
     argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]),
