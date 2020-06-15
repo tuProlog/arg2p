@@ -26,9 +26,9 @@ in(A, (_ , Cs)) :- in(A, Cs).
 convertAllRules :-
     retractall(rule(_)), !,
     retractall(abstractBp(_)), !,
-    retractall(bp(_)), !,
+    retractall(reifiedBp(_)), !,
     findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), StandardRules),
-    findall([RuleName, Effect], (RuleName : Effect), SpecialRules),
+    findall([_, X], search('bp', 10, X), SpecialRules),
     append(StandardRules, SpecialRules, L),
     convertAllRules(L).
 
@@ -61,7 +61,7 @@ convertRule(RuleName, Preconditions, Effects) :-
 /*
  *   Convert the given special rule
  *   Example:
- *   b0: bp(-liable(X)).
+ *   bp(-liable(X)).
  *   abastractBp([[neg, liable(X_e4149)]]).
  */
 convertRule(_, Effects) :-

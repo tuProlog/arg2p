@@ -23,11 +23,10 @@ r4 : guidelines(X) => -negligent(X).
 r5 : negligent(X) => liable(X). 
 r6 : -negligent(X) => -liable(X).
 
-b0 : bp(-negligent(X)).
-b1 : bp(-guidelines(X)).
+bp(-negligent(X)).
+% bp(-guidelines(X)).
 
 partialHBP.
-
 demonstration.
 
 test :-

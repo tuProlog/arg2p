@@ -13,10 +13,6 @@ public class Arg2PLibrary extends Library {
 
     public Arg2PLibrary(String theoryFileName) {
         this.theoryFileName = theoryFileName;
-        final File f = new File(Arg2PLibrary.class.getResource(theoryFileName + ".pl").getFile());
-        if (!f.exists()) {
-            throw new IllegalArgumentException(String.format("File %s does not exist.", f.getAbsoluteFile()));
-        }
     }
 
     @Override

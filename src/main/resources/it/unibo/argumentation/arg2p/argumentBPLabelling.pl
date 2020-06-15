@@ -227,7 +227,7 @@ complement([_, _, [A]], ['neg',A]).
     Checks Burden of proof membership
 */
 isInBurdenOfProof(Concl) :-
-    bp(Literals),
+    reifiedBp(Literals),
     member(Concl, Literals), !.
 
 % All the arguments with this conclusion are in the Set (If no arguments returns true)
@@ -259,8 +259,8 @@ extractConclusions(IN, OUT, UND, SL) :-
 computeBp(Conclusions) :-
     abstractBp(AbstractBp),
     fillTemplate(AbstractBp, Conclusions, R),
-    \+ bp(R),
-    asserta(bp(R)),
+    \+ reifiedBp(R),
+    asserta(reifiedBp(R)),
     computeBp(Conclusions).
 
 computeBp(_).

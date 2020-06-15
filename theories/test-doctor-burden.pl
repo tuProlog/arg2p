@@ -10,7 +10,7 @@ r2: followedGuidelines(X), doctor(X) => -liable(X).
 r3: say(E, harmed(X,Y)), expert(E) => harmed(X, Y).
 r4: say(E,followedGuidelines(X)), expert(E) => followedGuidelines(X).
 %
-b0: bp(say(Y, followedGuidelines(X)), -liable(X)).
+bp(say(Y, followedGuidelines(X)), -liable(X)).
 
 %sup(r1, r2).
 

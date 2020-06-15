@@ -1,8 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
     `java-library`
     application
     eclipse
+    id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
 repositories {

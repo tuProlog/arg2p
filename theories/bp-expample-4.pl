@@ -15,8 +15,8 @@ r1 : a(X) => b(X).
 r2 : [] => -a('Pippo'). 
 r3 : -a(X) => -b(X).
 
-b0 : bp(-a(X)).
-b1 : bp(b(X)).
+bp(-a(X)).
+bp(b(X)).
 
 % partialHBP.
 

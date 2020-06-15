@@ -27,7 +27,7 @@ r8: killed(X), intention(X) => murder(X).
 
 sup(r7, r8).
 
-b0 : bp(killed(X), intention(X), -selfDefence(X)).
+bp(killed(X), intention(X), -selfDefence(X)).
 
 % partialHBP.
 

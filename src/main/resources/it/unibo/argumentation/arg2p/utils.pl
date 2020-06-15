@@ -48,3 +48,14 @@ appendLists([], []).
 appendLists([H|T], R) :-
     appendLists(T, AT),
     append(H, AT, R).
+
+%------------------------------------------------------------------
+
+search(F, L, S) :-
+   between(1, L, N),
+   functor(S, F, N),
+   call(S).
+
+between(N, M, K) :- N < M, K = N.
+between(N, M, K) :- N == M, !, K = N.
+betweent(N, M, K) :- N < M, N1 is N+1, bet(N1, M, K).
