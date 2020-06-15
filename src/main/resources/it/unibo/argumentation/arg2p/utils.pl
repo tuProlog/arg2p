@@ -58,4 +58,4 @@ search(F, L, S) :-
 
 between(N, M, K) :- N < M, K = N.
 between(N, M, K) :- N == M, !, K = N.
-betweent(N, M, K) :- N < M, N1 is N+1, bet(N1, M, K).
+between(N, M, K) :- N < M, N1 is N+1, between(N1, M, K).
