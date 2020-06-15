@@ -4,7 +4,7 @@
 % Year: 2019
 % ---------------------------------------------------------------
 
-buildLabelSets ([In, No, Und], [IN, OUT, UND]) :-
+buildLabelSets ([In, No, Und], [BPIN, BPOUT, BPUND]) :-
     convertAllRules,
     buildArgumentationGraph([Arguments, Attacks, Supports] ),
     argumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]),
