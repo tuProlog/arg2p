@@ -12,6 +12,8 @@ Quick links:
 - GitHub Repository (where JVM releases are hosted) _(cooming soon)_
 - Maven Repository (where all releases are hosted) _(cooming soon)_
 
+## Intro
+
 <!--- ![Arg2P Logo][logo] --->
 
 <!--- [logo]: {{ 'assets/media/logo-Arg2P.png'|asset|scale(0.65)  }} --->
@@ -22,7 +24,7 @@ Quick links:
 
 
 
-> Arg2P is an argumentation engine built on the top of [tuProlog (2P) engine](http://pika-lab.gitlab.io/tuprolog/2p-in-kotlin/). Arg2P is a lightweight implementation of the ASPIC<sup>+</sup>-like system for structured  argumentation. 
+> <span style="color: blue">Arg2P is an argumentation engine built on the top of [tuProlog (2P) engine](http://pika-lab.gitlab.io/tuprolog/2p-in-kotlin/). Arg2P is a lightweight implementation of the ASPIC<sup>+</sup>-like system for structured  argumentation</span>. 
 
 In a nutshell, <span style="color: blue">arguments are produced from a set of defeasible rules</span>, and attack relationships between arguments are captured by argumentation graphs. The arguments of such graphs are labelled by following a labelling semantics. This simple framework will suffice to illustrate our upcoming investigation into persuasive burdens within an argumentation setting. 
 
