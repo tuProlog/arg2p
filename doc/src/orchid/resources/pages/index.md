@@ -1,7 +1,16 @@
 ---
 title: Home
 ---
+
 # Arg2P
+
+
+- [GitLab Repository](https://gitlab.com/pika-lab/argumentation/arg2p) (the one used by developers)
+- [GitLab Repository Test Release](https://gitlab.com/pika-lab/argumentation/arg2p/-/releases) (test used by developers)
+
+- GitHub Repository (where JVM releases are hosted) _(cooming soon)_
+- Maven Repository (where all releases are hosted) _(cooming soon)_
+
 <!--- ![Arg2P Logo][logo] --->
 
 <!--- [logo]: {{ 'assets/media/logo-Arg2P.png'|asset|scale(0.65)  }} --->
@@ -11,14 +20,13 @@ title: Home
 </p>
 
 
-tuProlog (2P henceforth) is multi-paradigm logic programming framework written in Kotlin.
 
-> Arg2P is an argumentation engine built on the top of 2P. Arg2P is a lightweight implementation of the ASPIC<sup>+</sup>-like system for structured  argumentation. 
+> Arg2P is an argumentation engine built on the top of [tuProlog (2P) engine](http://pika-lab.gitlab.io/tuprolog/2p-in-kotlin/). Arg2P is a lightweight implementation of the ASPIC<sup>+</sup>-like system for structured  argumentation. 
 
 In a nutshell, <span style="color: blue">arguments are produced from a set of defeasible rules</span>, and attack relationships between arguments are captured by argumentation graphs. The arguments of such graphs are labelled by following a labelling semantics. This simple framework will suffice to illustrate our upcoming investigation into persuasive burdens within an argumentation setting. 
 
-In addition, we use defeasible rule schemata to account for <span style="color: blue">deontic</span> reasoning, towards doctrine reification, as presented in Riveret et al. 2019.
+In addition, we use defeasible rule schemata to account for <span style="color: blue">deontic</span> reasoning, towards doctrine reification, as presented in [Riveret et al., 2019](https://www.researchgate.net/publication/335754554_A_Deontic_Argumentation_Framework_Towards_Doctrine_Reification).
 
-Moreover, the model has been extended following the <span style="color: blue">burden of proof</span> model presented in Calegari and Sartor 2020.
+Moreover, the model has been extended following the <span style="color: blue">burden of proof</span> model presented in [Calegari and Sartor, 2020](https://www.overleaf.com/read/nqyzhycmjmst).
 
 More information about the format of the knowledge base and rules can be found on the [basic syntax]({{ site.baseUrl }}/wiki/syntax).
