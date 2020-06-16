@@ -13,6 +13,7 @@ cache:
 
 variables:
   GOPTS: "--no-daemon --console=plain"
+  ORG_GRADLE_PROJECT_orchidBaseUrl: "https://pika-lab.gitlab.io/argumentation/arg2p/"
 
 build:
   stage: build
@@ -21,3 +22,14 @@ build:
 test:
   stage: test
   script: ./gradlew check $GOPTS
+
+pages:
+  script:
+    - mkdir public
+    - ./gradlew orchidBuild $GOPTS
+    - cp -r doc/build/docs/orchid/* public
+  artifacts:
+    paths:
+      - public
+  only:
+    - /^(master)|(release)|(documentation)$/
