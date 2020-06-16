@@ -4,6 +4,7 @@ title: Home
 
 # Arg2P
 
+Quick links:
 
 - [GitLab Repository](https://gitlab.com/pika-lab/argumentation/arg2p) (the one used by developers)
 - [GitLab Repository Test Release](https://gitlab.com/pika-lab/argumentation/arg2p/-/releases) (test used by developers)
