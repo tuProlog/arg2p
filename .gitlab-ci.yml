@@ -1,4 +1,15 @@
-image: gciatto/my-images:jdk12-alpine-gradle551
+image: pikalab/ci:ubuntu-jdk14-git-gradle-graphviz
+
+before_script:
+  - chmod +x gradlew
+  - source $HOME/.sdkman/bin/sdkman-init.sh
+
+cache:
+  paths:
+    - $HOME/.gradle/
+    - gradle/
+    - .gradle/
+    - build/
 
 variables:
   GOPTS: "--no-daemon --console=plain"
