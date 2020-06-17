@@ -8,8 +8,8 @@ stages:
 before_script:
   - chmod +x gradlew
   - source $HOME/.sdkman/bin/sdkman-init.sh
-  - sudo apt-get update
-  - sudo apt-get install fakeroot
+  - apt-get update
+  - apt-get install fakeroot
 
 cache:
   paths:
