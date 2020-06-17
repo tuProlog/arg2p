@@ -18,7 +18,7 @@ application {
 }
 
 runtime {
-    options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
+    options.set(listOf("--compress", "2", "--no-header-files", "--no-man-pages"))
     jpackage {
         if(org.gradle.internal.os.OperatingSystem.current().isLinux()) {
             installerType = "deb"
