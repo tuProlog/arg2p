@@ -40,21 +40,20 @@ pages:
   only:
     - /^(master)|(release)|(documentation)$/
 
-build:create-jar:
+post:create-jar:
+  stage: post
   only:
     - master
-  before_script: []
   script:
     - $GCMD :arg2p:shadowJar
   artifacts:
     paths:
       - ./arg2p/build/libs/*.jar
 
-build:create-deb-executable:
+post:create-deb-executable:
   stage: post
   only:
     - master
-  before_script: []
   script:
     - $GCMD :arg2p:jpackage
   artifacts:
