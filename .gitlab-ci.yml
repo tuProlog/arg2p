@@ -52,10 +52,8 @@ post:create-jar:
 
 post:create-deb-executable:
   stage: post
-  image: gradle:jdk14
   only:
     - master
-  before_script: []
   script:
     - $GCMD :arg2p:jpackage
   artifacts:
