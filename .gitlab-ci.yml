@@ -47,7 +47,7 @@ pages:
     - /^(master)|(release)|(documentation)$/
 
 arg2p-jar:
-  stage: bundle
+  stage: build
   only:
     - master
     - tags
@@ -70,7 +70,7 @@ arg2p-linux-deb:
 
 post:create:gitlab:release:
   image: registry.gitlab.com/gitlab-automation-toolkit/gitlab-auto-release
-  stage: build
+  stage: post
   only:
     - master
     - tags
