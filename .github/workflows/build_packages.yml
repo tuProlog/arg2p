@@ -1,0 +1,91 @@
+name: build-package
+
+on: 
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-executables:
+    name: build executables
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      - name: Package with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew :arg2p:jpackage
+      - name: Upload package
+        uses: actions/upload-artifact@v1
+        with:
+          name: executables
+          path: arg2p/build/jpackage
+  build-jar:
+    name: build jar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      - name: Package with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew :arg2p:shadowJar
+      - name: Upload package
+        uses: actions/upload-artifact@v1
+        with:
+          name: executableJar
+          path: arg2p/build/libs
+  release:
+    runs-on: ubuntu-latest
+    needs: [build-jar, build-executables]
+    steps:
+      - name: Get version from tag
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          export CURRENT_VERSION=${GITHUB_REF/refs\/tags\/v/}
+          echo "::set-env name=CURRENT_VERSION::$CURRENT_VERSION"
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v1.1.0
+        with:
+          version: ${{ env.CURRENT_VERSION }}
+          path: ./CHANGELOG.md
+      - name: Cleaning folder
+        run: rm -rf *
+      - uses: actions/download-artifact@v2
+        with: 
+          name: executables
+      - uses: actions/download-artifact@v2
+        with: 
+          name: executableJar
+      - name: Prepare artifacts
+        run: |
+          mv *.dmg arg2p-osx.dmg
+          mv *.deb arg2p-lin.deb
+          mv *.msi arg2p-win.msi
+          mv *.jar arg2p.jar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            arg2p-osx.dmg
+            arg2p-lin.deb
+            arg2p-win.msi
+            arg2p.jar
+          body: ${{ steps.changelog_reader.outputs.log_entry }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
