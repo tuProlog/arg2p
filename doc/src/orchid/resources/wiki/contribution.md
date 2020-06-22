@@ -1,4 +1,4 @@
-## People
+## Team
 - Roberta Calegari
 - Giuseppe Pisano
 
