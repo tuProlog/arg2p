@@ -4,4 +4,5 @@
 
 
 ## Contributors
+- Giovanni Ciatto
 - Regis Riveret
