@@ -2,5 +2,6 @@
 - Roberta Calegari
 - Giuseppe Pisano
 
-##Contributors
+
+## Contributors
 - Regis Riveret
