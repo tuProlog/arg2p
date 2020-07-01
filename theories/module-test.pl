@@ -1,5 +1,5 @@
 modulesPath('C:/Users/peppe_000/Documents/MyProjects/Research/arg2p/theories').
-defendant('Mary').
+defendant('Steven').
 nationality('Italian').
 
 evaluate(Yes, No, Und) :-
