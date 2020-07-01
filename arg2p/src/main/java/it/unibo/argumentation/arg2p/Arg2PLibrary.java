@@ -4,7 +4,6 @@ import alice.tuprolog.Library;
 import alice.tuprolog.Prolog;
 import alice.util.Tools;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Arg2PLibrary extends Library {
@@ -40,5 +39,6 @@ public class Arg2PLibrary extends Library {
         engine.loadLibrary(StatementLabelling.class.getName());
         engine.loadLibrary(ArgumentationEngineInterface.class.getName());
         engine.loadLibrary(RuleTranslator.class.getName());
+        engine.loadLibrary(ModuleCall.class.getName());
     }
 }
