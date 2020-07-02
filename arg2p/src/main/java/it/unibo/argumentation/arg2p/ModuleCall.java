@@ -33,20 +33,41 @@ public class ModuleCall extends Arg2PLibrary {
             throw PrologError.type_error(getEngine().getEngineManager(), 2,
                     "struct", g);
         }
+
         Struct theory = (Struct) th;
         Struct goal = (Struct) g;
         try {
-            Prolog engine = new Prolog();
-            Arg2PLibrary.loadDeonLiteOnPrologEngine(engine);
-            Theory t = Theory.parseWithOperators(alice.util.Tools.removeApices(theory.toString()),
-                    engine.getOperatorManager());
-            engine.setTheory(t);
-            engine.addTheory(Theory.of(env));
+            Prolog engine = prepareCleanEngine(env, theory);
             SolveInfo solve = engine.solve(goal.toString() + ".");
-            return unify(g, solve.getSolution());
+            if (solve.isSuccess()) return unify(g, solve.getSolution());
+            return false;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }
+    }
+
+    private Prolog prepareCleanEngine(Term env, Struct theory) {
+        Prolog engine = new Prolog();
+        Arg2PLibrary.loadDeonLiteOnPrologEngine(engine);
+
+        Theory t = Theory.parseWithOperators(alice.util.Tools.removeApices(theory.toString()),
+                engine.getOperatorManager());
+
+        engine.setTheory(getEnvTheory(env, engine));
+        engine.addTheory(Theory.of(env));
+        engine.addTheory(t);
+
+        return engine;
+    }
+
+    private Theory getEnvTheory(Term env, Prolog engine) {
+        if (!(env instanceof Struct) || ((Struct) env).getArity() != 1) {
+            return Theory.empty();
+        }
+
+        return Theory.parseWithOperators(
+                alice.util.Tools.removeApices(((Struct) env).getArg(0).getTerm().toString()),
+                engine.getOperatorManager());
     }
 }

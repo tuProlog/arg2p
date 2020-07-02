@@ -8,9 +8,8 @@ call_module(Module, Query) :-
 	modulesPath(X),
 	strings_concat([X, '/', Module, '.pl'], Path),
 	text_from_file(Path, ModuleTheory),
-	env(CaseTheory),
-	strings_concat([ModuleTheory, CaseTheory], Theory),
-	agent(Theory, env(CaseTheory), Query).
+	env(MainTheory),
+	agent(ModuleTheory, env(MainTheory), Query), !.
 
 strings_concat([], '').
 strings_concat([H|T], Y) :-
