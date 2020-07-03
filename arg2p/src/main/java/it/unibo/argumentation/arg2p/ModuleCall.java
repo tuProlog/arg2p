@@ -1,9 +1,11 @@
 package it.unibo.argumentation.arg2p;
 
 import alice.tuprolog.*;
+import alice.tuprolog.exceptions.NoSolutionException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 public class ModuleCall extends Arg2PLibrary {
     public ModuleCall() {
@@ -15,10 +17,11 @@ public class ModuleCall extends Arg2PLibrary {
      *
      * @throws PrologError
      */
-    public boolean agent_3(Term th, Term env, Term g) throws PrologError {
+    public boolean arg_agent_2(Term th, Term g) throws PrologError {
+        
         th = th.getTerm();
-        env = env.getTerm();
         g = g.getTerm();
+
         if (th instanceof Var) {
             throw PrologError.instantiation_error(getEngine().getEngineManager(), 1);
         }
@@ -26,18 +29,17 @@ public class ModuleCall extends Arg2PLibrary {
             throw PrologError.instantiation_error(getEngine().getEngineManager(), 2);
         }
         if (!(th.isAtom())) {
-            throw PrologError.type_error(getEngine().getEngineManager(), 1, "atom",
-                    th);
+            throw PrologError.type_error(getEngine().getEngineManager(), 1, "atom", th);
         }
         if (!(g instanceof Struct)) {
-            throw PrologError.type_error(getEngine().getEngineManager(), 2,
-                    "struct", g);
+            throw PrologError.type_error(getEngine().getEngineManager(), 2, "struct", g);
         }
 
         Struct theory = (Struct) th;
         Struct goal = (Struct) g;
+
         try {
-            Prolog engine = prepareCleanEngine(env, theory);
+            Prolog engine = prepareCleanEngine(theory);
             SolveInfo solve = engine.solve(goal.toString() + ".");
             if (solve.isSuccess()) return unify(g, solve.getSolution());
             return false;
@@ -45,29 +47,31 @@ public class ModuleCall extends Arg2PLibrary {
             ex.printStackTrace();
             return false;
         }
+
     }
 
-    private Prolog prepareCleanEngine(Term env, Struct theory) {
+    private Prolog prepareCleanEngine(Struct theory) {
         Prolog engine = new Prolog();
         Arg2PLibrary.loadDeonLiteOnPrologEngine(engine);
 
         Theory t = Theory.parseWithOperators(alice.util.Tools.removeApices(theory.toString()),
                 engine.getOperatorManager());
 
-        engine.setTheory(getEnvTheory(env, engine));
-        engine.addTheory(Theory.of(env));
+        engine.setTheory(getEnvTheory());
         engine.addTheory(t);
 
         return engine;
     }
 
-    private Theory getEnvTheory(Term env, Prolog engine) {
-        if (!(env instanceof Struct) || ((Struct) env).getArity() != 1) {
-            return Theory.empty();
-        }
+    private Theory getEnvTheory() {
+        
+        final Optional<Term> modulesPath = getEngine().getTheory()
+                .getClauses().stream()
+                .filter(x -> x.match(getEngine().termSolve("modulesPath(X)")))
+                .findAny();
 
-        return Theory.parseWithOperators(
-                alice.util.Tools.removeApices(((Struct) env).getArg(0).getTerm().toString()),
-                engine.getOperatorManager());
+        return modulesPath
+                .map(term -> Theory.of(term.copy()))
+                .orElseGet(Theory::empty);
     }
 }

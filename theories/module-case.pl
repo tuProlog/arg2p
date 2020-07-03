@@ -1,0 +1,2 @@
+defendant('Steven').
+nationality('Italian').
