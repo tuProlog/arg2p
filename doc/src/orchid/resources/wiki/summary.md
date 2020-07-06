@@ -2,3 +2,4 @@
 - [Basic Syntax](./syntax.md)
 - [Flag & API](./predicate.md)
 - [Run Instructions](./run.md)
+- [Contribution](./contribution.md)
