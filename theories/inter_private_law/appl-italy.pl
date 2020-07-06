@@ -1,8 +1,8 @@
 % ApplLawModule - Italy
 
-applicableLaw(C, ApplicableLaw) :-
+applicableLaw(Case, ApplicableLaw) :-
     contractDispute,
-    call_module(['rome-conv', C], applicableLaw(ApplicableLaw)).
+    call_module(['rome-conv', Case], applicableLaw(ApplicableLaw)).
 applicableLaw(_, ApplicableLaw) :-
     tortDispute,
     applicableTortLaw(ApplicableLaw).

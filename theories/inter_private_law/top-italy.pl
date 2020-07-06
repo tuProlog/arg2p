@@ -1,11 +1,11 @@
 % TopModule - Italy
 
-decision(C, Court, Outcome) :-
-    call_module(['juris-italy', C], hasJurisdiction(italy, C)),
-    call_module(['comp-italy', C], hasCompetence(Court)),
-    call_module(['appl-italy', C], applicableLaw(C, SubstantiveLawMod)),
-    call_module([SubstantiveLawMod, C], Outcome).
-decision(C, _, noJurisdiction) :-
-    call_module(['juris-italy', C], \+ hasJurisdiction(italy, C)).
-decision(C, Court, noCompetence) :-
-    call_module(['comp-italy', C], \+ hasCompetence(Court)).
+decision(Case, Court, Outcome) :-
+    call_module(['juris-italy', Case], hasJurisdiction(italy, Case)),
+    call_module(['comp-italy', Case], hasCompetence(Court)),
+    call_module(['appl-italy', Case], applicableLaw(Case, SubstantiveLawMod)),
+    call_module([SubstantiveLawMod, Case], Outcome).
+decision(Case, _, noJurisdiction) :-
+    call_module(['juris-italy', Case], \+ hasJurisdiction(italy, Case)).
+decision(Case, Court, noCompetence) :-
+    call_module(['comp-italy', Case], \+ hasCompetence(Court)).
