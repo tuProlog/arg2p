@@ -172,8 +172,8 @@ demonstration(A, UND, IN_STAR, OUT_STAR, UND_STAR, _, NewUnd, IN_STAR, OUT_STAR,
 findUndSubargument(A, UND, RESOLVING, NEW_RESOLVING, Sub) :-
     support(Sub, A),
     member(Sub, UND),
+%    writeDemonstration(['Sub -> ', Sub, ' of ', A]),
     \+ member(Sub, RESOLVING),
-    writeDemonstration(['Sub -> ', Sub, ' of ', A]),
     append(RESOLVING, [Sub], NEW_RESOLVING).
 
 findUndComplargument(A, UND, RESOLVING, NEW_RESOLVING, Compl) :-
@@ -181,8 +181,8 @@ findUndComplargument(A, UND, RESOLVING, NEW_RESOLVING, Compl) :-
     argument([X, Y, CA]),
     Compl = [X, Y, CA],
     member(Compl, UND),
+%    writeDemonstration(['Compl -> ', Compl, ' of ', A]),
     \+ member(Compl, RESOLVING),
-    writeDemonstration(['Compl -> ', Compl, ' of ', A]),
     append(RESOLVING, [Compl], NEW_RESOLVING).
 
 /*
@@ -191,23 +191,23 @@ findUndComplargument(A, UND, RESOLVING, NEW_RESOLVING, Compl) :-
 
 noSuperiorComplementInSet(Argument, Set) :-
     superiorComplArguments(Argument, LIST),
-    noIn(LIST, Set).
+    noInWithEmptyCheck(LIST, Set).
 
 noSubArgumentInSet(Argument, Set) :-
     allDirectsSubArguments(Argument, LIST),
-    noIn(LIST, Set).
+    noInWithEmptyCheck(LIST, Set).
 
 allComplementInSet(Argument, Set) :-
     allComplArguments(Argument, LIST),
-    allIn(LIST, Set).
+    allInWithEmptyCheck(LIST, Set).
 
 allSubArgumentInSet(Argument, Set) :-
     allDirectsSubArguments(Argument, LIST),
-    allIn(LIST, Set).
+    allInWithEmptyCheck(LIST, Set).
 
 oneOutSuperiorOrEqualComplementFromSet(Argument, Set) :-
     superiorOrEqualComplArguments(Argument, LIST),
-    oneOut(LIST, Set).
+    oneOutWithEmptyCheck(LIST, Set).
 
 oneOutSubArgumentFromSet(Argument, Set) :-
     allDirectsSubArguments(Argument, LIST),
@@ -215,7 +215,7 @@ oneOutSubArgumentFromSet(Argument, Set) :-
 
 oneInSuperiorOrEqualComplementFromSet(Argument, Set) :-
     superiorOrEqualComplArguments(Argument, LIST),
-    oneIn(LIST, Set).
+    oneInWithEmptyCheck(LIST, Set).
 
 oneInSubArgumentFromSet(Argument, Set) :-
     allDirectsSubArguments(Argument, LIST),
@@ -240,20 +240,27 @@ superiorOrEqualComplArguments(Argument, LIST) :-
     complement(Argument, CA),
     findall([A, B, CA], (argument([A, B, CA]), \+ superiorArgument(Argument, [A, B, CA])), LIST).
 
-% If list is empty always false
 
+noInWithEmptyCheck([], _).
+noInWithEmptyCheck(List, Target) :- noIn(List, Target).
 noIn(List, Target) :-
     member(X, List),
     \+ member(X, Target).
 
+allInWithEmptyCheck([], _).
+allInWithEmptyCheck(List, Target) :- allIn(List, Target).
 allIn(List, Target) :-
     member(X, List),
     \+ (member(X, List), \+ member(X, Target)).
 
+oneInWithEmptyCheck([], _).
+oneInWithEmptyCheck(List, Target) :- oneIn(List, Target).
 oneIn(List, Target) :-
     member(X, List),
     member(X, Target).
 
+oneOutWithEmptyCheck([], _).
+oneOutWithEmptyCheck(List, Target) :- oneOut(List, Target).
 oneOut(List, Target) :-
     member(X, List),
     \+ member(X, Target).
