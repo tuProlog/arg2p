@@ -23,7 +23,7 @@ r4: [] => -threatWithWeapon('Pippo').
 r5: threatWithWeapon(X) => selfDefence(X).
 r6: -threatWithWeapon(X) => -selfDefence(X).
 r7: selfDefence(X) => -murder(X).
-r8: killed(X), intention(X), selfDefence(X) => murder(X).
+r8: killed(X), intention(X), -selfDefence(X) => murder(X).
 
 sup(r7, r8).
 
