@@ -45,18 +45,9 @@ stopCondition(go, _, _, _, _, _, _).
 % PARTIAL HBP LABELLING
 %==============================================================================
 
-c([X], X).
-c([[L,_,_]|T], [L2,Q2,W2]) :-
-    c(T, [L2,Q2,W2]),
-    length(L, LN1),
-    length(L2, LN2),
-    LN1 > LN2.
-c([[L,Q,W]|_], [L,Q,W]).
-
-
 partialHBPLabelling([], IN_STAR, OUT_STAR, UND_STAR, IN_STAR, OUT_STAR, UND_STAR).
 partialHBPLabelling(UND, IN_STAR, OUT_STAR, UND_STAR, ResultIN, ResultOUT, ResultUND) :-
-    c(UND, A),
+    more_grounded_argument(UND, A),
     writeDemonstration(['Evaluating ', A]),
     demonstration(A, UND, IN_STAR, OUT_STAR, UND_STAR, [A], NewUnd, TempIN, TempOUT, TempUND),
     partialHBPLabelling(NewUnd, TempIN, TempOUT, TempUND, ResultIN, ResultOUT, ResultUND).
@@ -360,6 +351,15 @@ isComplementInBurdenOfProof(A) :-
 
 isArgumentInBurdenOfProof([_, _, Concl]) :-
     isInBurdenOfProof(Concl).
+
+more_grounded_argument([], []).
+more_grounded_argument([X], X).
+more_grounded_argument([[L,_,_]|T], [L2,Q2,W2]) :-
+    more_grounded_argument(T, [L2,Q2,W2]),
+    length(L, LN1),
+    length(L2, LN2),
+    LN1 > LN2.
+more_grounded_argument([[L,Q,W]|_], [L,Q,W]).
 
 /*
     Get a conclusion complement ([P] -> [neg, P])

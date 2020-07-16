@@ -15,6 +15,7 @@ dependencies {
 
 application {
     mainClassName = "alice.tuprologx.ide.JavaIDEWithArg2P"
+    // applicationDefaultJvmArgs = listOf("-Dsun.java2d.uiScale=2.5")
 }
 
 runtime {
