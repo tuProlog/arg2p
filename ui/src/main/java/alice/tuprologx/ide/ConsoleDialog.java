@@ -16,8 +16,11 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
+import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -409,14 +412,14 @@ public class ConsoleDialog
 
         if (!(info.getQuery().toString().startsWith("buildLabelSets") && info.isSuccess())) return;
 
-        final Map<String, java.util.List<String>> vertexes = ImmutableMap.of(
+        final Map<String, java.util.List<String>> vertices = ImmutableMap.of(
                 "in", extractArgs(info, 3),
                 "out", extractArgs(info, 4),
                 "und", extractArgs(info, 5));
 
         final Graph<String, String> graph = new SparseMultigraph<>();
 
-        vertexes.entrySet().stream()
+        vertices.entrySet().stream()
                 .flatMap(x -> x.getValue().stream())
                 .forEach(graph::addVertex);
 
@@ -434,12 +437,22 @@ public class ConsoleDialog
         final VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
         vv.setPreferredSize(new Dimension(500,500));
         vv.getRenderContext().setVertexFillPaintTransformer(i -> {
-            if (vertexes.get("in").contains(i)) return Color.GREEN;
-            if (vertexes.get("out").contains(i)) return Color.RED;
+            if (vertices.get("in").contains(i)) return Color.GREEN;
+            if (vertices.get("out").contains(i)) return Color.RED;
             return Color.GRAY;
         });
         vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.AUTO);
+
+//        VertexLabelAsShapeRenderer<String, String> vlasr = new VertexLabelAsShapeRenderer<String, String>(
+//                vv.getRenderContext());
+//
+//        vv.getRenderContext().setVertexShapeTransformer(vlasr);
+//        vv.getRenderer().setVertexLabelRenderer(vlasr);
+
+        final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse();
+        graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
+        vv.setGraphMouse(graphMouse);
 
         argumentationGraph.getViewport().setView(vv);
     }
