@@ -82,7 +82,7 @@ public class ConsoleDialog
     /*Castagna 06/2011*/
     private JTextPane exception;
 
-    private JScrollPane argumentationGraph;
+    private ArgumentationGraphFrame argumentationGraphFrame;
 
     private JButton bNext;
     private JButton bAccept;
@@ -144,8 +144,9 @@ public class ConsoleDialog
 
         tp.addTab("exceptions", new JScrollPane(exception));
 
-        argumentationGraph = new JScrollPane();
+        final JScrollPane argumentationGraph = new JScrollPane();
         tp.addTab("graph", argumentationGraph);
+        argumentationGraphFrame = new ArgumentationGraphFrame(argumentationGraph);
 
         /**/
 
@@ -380,81 +381,9 @@ public class ConsoleDialog
         }
         if (event.getSolveType() == 0)//if there is information about a solve operation
         {
-            printGraph(event.getQueryResult(), (Prolog) event.getSource());
+            argumentationGraphFrame.printGraph(event.getQueryResult(), (Prolog) event.getSource());
             showSolution(event.getQueryResult());
         }
-    }
-
-    private java.util.List<String> regexResults(String target) {
-        final java.util.List<String> matches = new LinkedList<>();
-        final Matcher m = Pattern
-                .compile("(?<=\\[\\[).*?(?=\\])")
-                .matcher(target);
-
-        while(m.find()) {
-            matches.add(m.group());
-        }
-        return matches;
-    }
-
-    private java.util.List<String> extractArgs(SolveInfo info, int index) {
-        try {
-            final String str = info.getBindingVars().get(index).toString();
-            return regexResults(
-                    str.replaceAll("^.|.$", ""));
-        } catch (NoSolutionException e) {
-            e.printStackTrace();
-        }
-        return new LinkedList<>();
-    }
-
-    private void printGraph(SolveInfo info, Prolog source) {
-
-        if (!(info.getQuery().toString().startsWith("buildLabelSets") && info.isSuccess())) return;
-
-        final Map<String, java.util.List<String>> vertices = ImmutableMap.of(
-                "in", extractArgs(info, 3),
-                "out", extractArgs(info, 4),
-                "und", extractArgs(info, 5));
-
-        final Graph<String, String> graph = new SparseMultigraph<>();
-
-        vertices.entrySet().stream()
-                .flatMap(x -> x.getValue().stream())
-                .forEach(graph::addVertex);
-
-        source.getTheory()
-            .getClauses().stream()
-            .filter(x -> x.match(source.termSolve("attack(X, Y)")))
-            .forEach(x -> {
-                java.util.List<String> r = regexResults(x.toString());
-                graph.addEdge(r.get(0).concat(r.get(1)), r.get(0), r.get(1), EdgeType.DIRECTED);
-            });
-
-        final Layout<String, String> layout = new KKLayout<>(graph);
-        layout.setSize(new Dimension(500,500));
-
-        final VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
-        vv.setPreferredSize(new Dimension(500,500));
-        vv.getRenderContext().setVertexFillPaintTransformer(i -> {
-            if (vertices.get("in").contains(i)) return Color.GREEN;
-            if (vertices.get("out").contains(i)) return Color.RED;
-            return Color.GRAY;
-        });
-        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.AUTO);
-
-//        VertexLabelAsShapeRenderer<String, String> vlasr = new VertexLabelAsShapeRenderer<String, String>(
-//                vv.getRenderContext());
-//
-//        vv.getRenderContext().setVertexShapeTransformer(vlasr);
-//        vv.getRenderer().setVertexLabelRenderer(vlasr);
-
-        final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse();
-        graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
-        vv.setGraphMouse(graphMouse);
-
-        argumentationGraph.getViewport().setView(vv);
     }
 
     private void showSolution(SolveInfo info) {

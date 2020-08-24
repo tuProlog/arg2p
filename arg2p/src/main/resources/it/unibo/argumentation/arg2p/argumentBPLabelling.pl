@@ -4,11 +4,11 @@
 % Year: 2019
 % ---------------------------------------------------------------
 
-enablePartialHBP :-
-    asserta(partialHBP).
+disableBPCompletion :-
+    asserta(disableBPcompletion).
 
-disablePartialHBP :-
-    retractall(partialHBP).
+enableBPCompletion :-
+    retractall(disableBPcompletion).
 
 writeDemonstration([]) :-
     demonstration,
@@ -22,7 +22,7 @@ writeDemonstration(_).
 argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
     reifyBurdenOfProofs(IN, OUT, UND),
     writeDemonstration(['=========================================>DEMONSTRATION']),
-    ((partialHBP, partialHBPLabelling(first, UND, IN, OUT, [], BPIN, BPOUT, BPUND));
+    ((disableBPcompletion, partialHBPLabelling(first, UND, IN, OUT, [], BPIN, BPOUT, BPUND));
     hbpComplete(go, IN, OUT, UND, BPIN, BPOUT, BPUND)),
     writeDemonstration(['=====================================>END DEMONSTRATION']).
 
