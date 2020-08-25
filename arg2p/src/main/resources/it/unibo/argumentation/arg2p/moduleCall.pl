@@ -11,7 +11,8 @@ load_modules([H|T], [Theory|X]) :-
 call_module(Modules, Query) :-
 	load_modules(Modules, Theories),
 	strings_concat(Theories, '\n\n', ModuleTheory),
-	arg_agent(ModuleTheory, Query), !.
+	arg_agent(ModuleTheory, Query, X), !,
+	member(Query, X).
 
 strings_concat(X, Y) :- strings_concat(X, '', Y).
 

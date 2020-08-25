@@ -1,11 +1,15 @@
 package it.unibo.argumentation.arg2p;
 
 import alice.tuprolog.*;
+import alice.tuprolog.event.QueryEvent;
 import alice.tuprolog.exceptions.NoSolutionException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class ModuleCall extends Arg2PLibrary {
     public ModuleCall() {
@@ -17,10 +21,11 @@ public class ModuleCall extends Arg2PLibrary {
      *
      * @throws PrologError
      */
-    public boolean arg_agent_2(Term th, Term g) throws PrologError {
+    public boolean arg_agent_3(Term th, Term g, Term res) throws PrologError {
         
         th = th.getTerm();
         g = g.getTerm();
+        res = res.getTerm();
 
         if (th instanceof Var) {
             throw PrologError.instantiation_error(getEngine().getEngineManager(), 1);
@@ -34,20 +39,31 @@ public class ModuleCall extends Arg2PLibrary {
         if (!(g instanceof Struct)) {
             throw PrologError.type_error(getEngine().getEngineManager(), 2, "struct", g);
         }
+        if (!(res instanceof Var)) {
+            throw PrologError.instantiation_error(getEngine().getEngineManager(), 3);
+        }
 
         Struct theory = (Struct) th;
         Struct goal = (Struct) g;
+        List<Term> results = new LinkedList<>();
 
         try {
             Prolog engine = prepareCleanEngine(theory);
-            SolveInfo solve = engine.solve(goal.toString() + ".");
-            if (solve.isSuccess()) return unify(g, solve.getSolution());
-            return false;
+            SolveInfo info = engine.solve(goal.toString() + ".");
+            while (info.isSuccess()) {
+                results.add(info.getSolution());
+                if (engine.hasOpenAlternatives())
+                    info = engine.solveNext();
+                else break;
+            }
+
+            unify(res, Struct.list(results));
+            return true;
+
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }
-
     }
 
     private Prolog prepareCleanEngine(Struct theory) {
