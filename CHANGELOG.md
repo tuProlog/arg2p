@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-08-25
+### Added
+- Argumentation graph visualisation on buildLabelSets/0 and buildLabelSets/2.
+### Changed
+- Rename printLabelSets/0 to buildLabelSets/0.
+- Rename the "partialHBP" flag to "disableBPcompletion".
+- Rename enablePartialHBP/0 and disablePartialHBP/0 to enableBPCompletion/0 and disableBPCompletion/0 respectively.
+### Fixed
+- Backtracking support in modular calls.
+
 ## [0.2.0] - 2020-07-06
 ### Added
 - Modular reasoning.
