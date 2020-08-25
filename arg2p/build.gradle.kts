@@ -9,13 +9,14 @@ plugins {
 }
 
 dependencies {
-    api("it.unibo.alice.tuprolog", "2p-ui", "4.1.1")
+    api(project(":ui"))
+//    api("it.unibo.alice.tuprolog", "2p-ui", "4.1.1")
     testImplementation("junit", "junit", "4.12")
 }
 
 application {
     mainClassName = "alice.tuprologx.ide.JavaIDEWithArg2P"
-    // applicationDefaultJvmArgs = listOf("-Dsun.java2d.uiScale=2.5")
+    //applicationDefaultJvmArgs = listOf("-Dsun.java2d.uiScale=2.5")
 }
 
 runtime {

@@ -4,11 +4,11 @@
 % Year: 2019
 % ---------------------------------------------------------------
 
-enablePartialHBP :-
-    asserta(partialHBP).
+disableBPCompletion :-
+    asserta(disableBPcompletion).
 
-disablePartialHBP :-
-    retractall(partialHBP).
+enableBPCompletion :-
+    retractall(disableBPcompletion).
 
 writeDemonstration([]) :-
     demonstration,
@@ -22,7 +22,7 @@ writeDemonstration(_).
 argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
     reifyBurdenOfProofs(IN, OUT, UND),
     writeDemonstration(['=========================================>DEMONSTRATION']),
-    ((partialHBP, partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND));
+    ((disableBPcompletion, partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND));
     hbpComplete(go, IN, OUT, UND, BPIN, BPOUT, BPUND)),
     writeDemonstration(['=====================================>END DEMONSTRATION']).
 
@@ -38,8 +38,16 @@ hbpComplete(_, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
     stopCondition(FLAG, IN, CompleteIN, OUT, CompleteOUT, UND, CompleteUND),
     hbpComplete(FLAG, CompleteIN, CompleteOUT, CompleteUND, BPIN, BPOUT, BPUND).
 
-stopCondition(stop, IN, IN, OUT, OUT, UND, UND).
-stopCondition(go, _, _, _, _, _, _).
+stopCondition(X, IN, CIN, OUT, COUT, UND, CUND) :-
+    sort(IN, SIN),
+    sort(CIN, SCIN),
+    sort(OUT, SOUT),
+    sort(COUT, SCOUT),
+    sort(UND, SUND),
+    sort(CUND, SCUND),
+    stopCondition_sorted(X, SIN, SCIN, SOUT, SCOUT, SUND, SCUND).
+stopCondition_sorted(stop, IN, IN, OUT, OUT, UND, UND).
+stopCondition_sorted(go, _, _, _, _, _, _).
 
 %==============================================================================
 % PARTIAL HBP LABELLING

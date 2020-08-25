@@ -1,0 +1,852 @@
+Library: built-ins
+
+'$call'(Goal) is true if and only if Goal represents a true goal. It is not opaque to cut.
+Template: ’$call’(+callable_term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when G is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when G is not a callable goal. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for G (here, callable), while Culprit is the actual data type found.
+
+halt(X) terminates a Prolog demonstration, exiting the Prolog thread and returning the provided int value to the parent system. In any of the tuProlog user interfaces – the GUI, the character-based console, the Android app, the Eclipse plugin – the effect is to terminate the whole application (including Eclipse itself).
+Template: halt(+int)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when X is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when X is not an integer number. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for X (here, integer), while Culprit is the actual data type found.
+
+is(X, Y) is true if X is unifiable with the value of the expression Y.
+Template: is(?term, @evaluable)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Y is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Y is not a valid expression. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 2), ValidType is the data type expected for G (here, evaluable), while Culprit is the actual data type found.
+Exception: error(evaluation_error (Error), evaluation_error(Goal, ArgNo, Error)) when an error occurs during the evaluation of Y. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 2), and Error is the error occurred (e.g. zero_division in case of a division by zero).
+
+'$tolist'(Compound, List) is true if Compound is a compound term, and in this case List is list representation of the compound, with the name as first element and all the arguments as other elements.
+Template: ’$tolist’(@struct, -list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Struct is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Struct is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ValidType is the data type expected for G (here, struct), while Culprit is the actual data type found.
+
+'$fromlist'(Compound, List) is true if Compound unifies with the list representation of List.
+Template: ’$fromlist’(-struct, @list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when List is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when List is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 2), ValidType is the data type expected for G (here, list), while Culprit is the actual data type found.
+
+copy_term(Term1, Term2) is true if Term2 unifies with the a renamed copy of Term1.
+Template: copy_term(?term, ?term)
+
+'$append'(Element, List) is true if List is a list, with the side effect that the Element is appended to the list.
+Template: ’$append’(+term, @list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when List is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when List is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 2), ValidType is the data type expected for G (here, list), while Culprit is the actual data type found.
+
+'$find'(Clause, Clauses) is true if Clause is a clause and Clauses is a list: as a side effect, all the database clauses matching Clause are appended to the Clauses list.
+Template: ’$find’(@clause, @list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Clause is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Clauses is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2), ValidType is the data type expected for Clauses (i.e. list), while Culprit is the actual data type found.
+
+abolish(Predicate) completely wipes out the dynamic predicate matching Predicate.
+Template: abolish(@term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Predicate is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Predicate is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for Predicate, while Culprit is the actual data type found.
+
+asserta(Clause) is true, with the side effect that the clause Clause is added to the beginning of database.
+Template: asserta(@clause)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Clause is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Clause is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for Clause, while Culprit is the actual data type found.
+
+assertz(Clause) is true, with the side effect that the clause Clause is added to the end of the database.
+Template: assertz(@clause)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Clause is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Clause is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for Clause, while Culprit is the actual data type found.
+
+'$retract'(Clause) is true if the database contains at least one clause unifying with Clause; as a side effect, the clause is removed from the database. It is not re-executable. Please do not confuse this built-in predicate with the retract/1 predicate of BasicLibrary.
+Template: ’$retract’(@clause)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Clause is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Clause is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for Clause, while Culprit is the actual data type found.
+
+op(Priority, Specifier, Operator) is true. It always succeeds, modifying the operator table as a side effect. If Priority is 0, then Operator is removed from the operator table; else, Operator is added to the operator table, with priority (lower binds tighter) Priority and associativity determined by Specifier. If an operator with the same Operator symbol and the same Specifier already exists in the operator table, the predicate modifies its priority according to the specified Priority argument.
+Template: op(+integer, +specifier, @atom_or_atom_list)
+
+flag_list(FlagList) is true and FlagList is the list of the flags currently defined in the engine.
+Template: flag_list(-list)
+
+set_prolog_flag(Flag, Value) is true, and as a side effect associates Value with the flag Flag, where Value is a value that is within the implementation defined range of values for Flag.
+Template: set_prolog_flag(+flag, @nonvar)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if either Flag or Value is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (1 or 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Flag is not a structure or Value is not ground. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (1 or 2), Valid-Type is the data type expected for Flag or Value (struct or ground, respectively), while Culprit is the actual wrong term (either Flag or Value).
+Exception: error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if Flag is undefined in the engine or Value is not admissible for Flag. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (1 or 2), ValidDomain is the data type expected for Flag or Value (prolog_flag or flag_value, respectively), while Culprit is the actual wrong term (either Flag or Value).
+Exception: error(permission_error(Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if Flag is unmodifiable. Goal is the goal where the problem occurred, Operation is the operation that caused the problem (modify), ObjectType is the data type of the flag (i.e. flag), Culprit is the actual wrong term (clearly, Flag), and Message adds possible extra info (by convention, the atom 0 is used when no extra info exists).
+
+get_prolog_flag(Flag, Value) is true if Flag is a flag supported by the engine and Value is the value currently associated with it. It is not re-executable.
+Template: get_prolog_flag(+flag, ?term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when Flag is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when Flag is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ValidType is the data type expected for G (here, struct), while Culprit is the actual data type found.
+Exception: error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if Flag is undefined in the engine. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ValidDomain is the domain expected for G (here, prolog_flag), while Culprit is the actual wrong term found.
+
+load_library(LibraryName) is true if LibraryName is the name of a tuProlog library available for loading. As side effect, the specified library is loaded by the engine. Actually LibraryName is the full name of the Java class providing the library.
+Template: load_library(@string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when LibraryName is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when LibraryName is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for LibraryName, while Culprit is the actual data type found.
+Exception: error(existence_error(ObjectType, Culprit),existence_error(Goal, ArgNo, ObjectType, Culprit, Message)) when the library LibraryName does not exist. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ObjectType is the data type expected for the missing object (here, class), while Culprit is the actual data type found and Message provides extra info about the occurred error.
+
+unload_library(LibraryName) is true if LibraryName is the name of a library currently loaded in the engine. As side effect, the library is unloaded from the engine. Actually LibraryName is the full name of the Java class providing the library.
+Template: unload_library(@string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) when LibraryName is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) when LibraryName is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ValidType is the data type expected for LibraryName, while Culprit is the actual data type found.
+Exception: error(existence_error(ObjectType, Culprit),existence_error(Goal, ArgNo, ObjectType, Culprit, Message)) when the library LibraryName does not exist. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1), ObjectType is the data type expected for the missing object (here, class), while Culprit is the actual data type found and Message provides extra info about the occurred error.
+
+Library: directives
+
+:- op(Priority, Specifier, Operator) adds Operator to the operator table, with priority (lower binds tighter) Priority and associativity determined by Specifier.
+Template: op(+integer, +specifier, @atom_or_atom_list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if any of Priority, Specifier or Operator is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (one of 1, 2, 3).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Priority is not an integer number, or Specifier is not an atom, or Operator is not an atom or a list of atoms. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (one of 1, 2 or 3), ValidType is the data type expected for the Culprit, and Culprit is the actual cause of the problem.
+Exception: error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if the type of Priority and Specifier is correct, but their values are not admissible for the operator priority or associativity, respectively. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (1 or 2), ValidDomain is the data type expected for Culprit, and Culprit is the actual wrong term found.
+
+:- flag(FlagName, ValidValuesList, DefaultValue, IsModifiable) adds to the engine a new flag, identified by the FlagName name, which can assume only the values listed in ValidValuesList with DefaultValue as default value, and that can be modified if IsModifiable is true.
+Template: flag(@string, @list, @term, @true, false)
+
+:- initialization(Goal) sets the starting goal to be executed just after the theory has been consulted.
+Template: initialization(@goal)
+
+Synonym for :- initialization/1. Deprecated.
+Template: solve(@goal)
+
+:- include(Filename) immediately loads the theory contained in the file specified by Filename. Again, errors in the file name do not raise exceptions: the directive simply fails, yielding no effect at all. Until tuProlog 2.6, an include directive trying to load another Prolog file in a directory other than the current one will fail, unless the absolute sub-file name, or a relative path referred to the engine’s base folder is provided. From tuProlog 2.7 on, an enhanced mechanism has been included that enables tuProlog to look for Prolog files in all the subfolders of the project base folder. So, for instance, the file someOtherFile located in someOtherFolder (a folder other than the current one) can be loaded from the current folder by simply issuing a consult(someOtherFile) command. See also Section ?.
+Template: include(@string)
+
+Synonym for :- include/1. Deprecated.
+Template: consult(@string)
+
+Library: basics
+
+constant(X) is true if X is a constant value.
+Template: constant(@term)
+
+number(X) is true if X is an integer or a float.
+Template: number(@term)
+
+integer(X) is true if X is an integer.
+Template: integer(@term)
+
+float(X) is true if X is an float.
+Template: float(@term)
+
+atom(X) is true if X is an atom.
+Template: atom(@term)
+
+compound(X) is true if X is a compound term, that is neither atomic nor a variable.
+Template: compound(@term)
+
+var(X) is true if X is a variable.
+Template: var(@term)
+
+nonvar(X) is true if X is not a variable.
+Template: nonvar(@term)
+
+atomic(X) is true if X is atomic (that is is an atom, an integer or a float).
+Template: atomic(@term)
+
+ground(X) is true if X is a ground term.
+Template: ground(@term)
+
+list(X) is true if X is a list.
+Template: list(@term) 
+
+'=..'(Term, List) is true if List is a list consisting of the functor and all arguments of Term, in this order.
+Template: ’=..’(?term, ?list)
+
+functor(Term, Functor, Arity) is true if the term Term is a compound term, Functor is its functor, and Arity (an integer) is its arity; or if Term is an atom or number equal to Functor and Arity is 0.
+Template: functor(?term, ?term, ?integer)
+
+arg(N, Term, Arg) is true if Arg is the Nth arguments of Term (counting from 1).
+Template: arg(@integer, @compound, -term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if N or Term are variables. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1 or 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if N is not an integer number or Term is not a compound term. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1 or 2), ValidType is the expected data type (integer or compound, respectively), Culprit is the wrong term found (either N or Term).
+Exception: error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if N is an int value less than 1. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ValidDomain is the expected domain (greater_than_zero, respectively), Culprit is the wrong term found (obviously, N).
+
+text_term(Text, Term) is true if Text is the text representation of the term Term.
+Template: text_term(?text, ?term)
+
+text_concat(Text1, Text2, TextDest) is true if TextDest is the text resulting by appending the text Text2 to Text1.
+Template: text_concat(@string, @string, -string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Text1 or Text2 are variables. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1 or 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Text1 or Text2 are not atoms. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1 or 2), ValidType is the expected data type (e.g. atom), Culprit is the wrong term found (either Text1 or Text2).
+
+num_atom(Number, Atom) succeeds if Atom is the atom representation of the number Number
+Template: number_codes(+number, ?atom)
+Template: number_codes(?number, +atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Atom is a variable and Number is not a number, or, viceversa, if Atom is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1 or 2), ValidType is the expected data type for the wrong argument (e.g. either number or atom), Culprit is the wrong term found (either Number or Atom).
+Exception: error(domain_error(ValidType, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if Atom is an atom that does not represent a number. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 2), ValidDomain is the expected domain for the wrong argument (num_atom), Culprit is the wrong term found (obviously Atom).
+
+unify_with_occurs_check(X, Y) is true if X and Y are unifiable.
+Template: unify_with_occurs_check(?term, ?term)
+
+findall(Template, Goal, List) is true if and only if List unifies with the list of values to which a variable X not occurring in Template or Goal would be instantiated by successive re-executions of call(Goal), X = Template after systematic replacement of all variables in X by new variables.
+Template: findall(?term, +callable_term, ?list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if G is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if G is not a callable goal (for instance, it is a number). Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2), ValidType is the expected data type (callable), Culprit is the wrong term found.
+
+bagof(Template, Goal, Instances) is true if Instances is a non-empty list of all terms such that each unifies with Template for a fixed instance W of the variables of Goal that are free with respect to Template. The ordering of the elements of Instances is the order in which the solutions are found.
+Template: bagof(?term, +callable_term, ?list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if G is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if G is not a callable goal (for instance, it is a number). Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2), ValidType is the expected data type (callable), Culprit is the wrong term found.
+
+setof(Template, Goal, List) is true if List is a sorted non-empty list of all terms that each unifies with Template for a fixed instance W of the variables of Goal that are free with respect to Template.
+Template: setof(?term, +callable_term, ?list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if G is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if G is not a callable goal (for instance, it is a number). Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2), ValidType is the expected data type (callable), Culprit is the wrong term found.
+
+call(Goal) is true if and only if Goal represents a goal which is true. It is opaque to cut.
+Template: call(+callable_term)
+Exception:  the same as the built-in predicate $call/1; the exception results to be raised by the auxiliary predicate call_guard(G).
+
+once(Goal) finds exactly one solution to Goal. It is equivalent to call((Goal, ! )) and is opaque to cuts.
+Template: once(@goal)
+
+Whenever backtracking reaches repeat, execution proceeds forward again through the same clauses as if another alternative has been found.
+Template: repeat
+
+'\+'(Goal) is the negation predicate and is opaque to cuts. That is, '\+'(Goal) is like call(Goal) except that its success or failure is the opposite.
+Template: ’∖+’(@goal)
+
+The predicate not/1 has the same semantics and implementation as the predicate '\+'/1.
+Template: not(@goal) 
+
+clause(Head, Body) is true if Head matches the head of a dynamic predicate, and Body matches its body. The body of a fact is considered to be true. Head must be at least partly instantiated.
+Template: clause(@term, -term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Head is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+
+assert(Clause) is true and adds Clause to the end of the database.
+Template: assert(@term)
+Exception:  the same as the built-in predicate assertz/1.
+
+retract(Clause) removes from the knowledge base a dynamic clause that matches Clause (which must be at least partially instantiated). Multiple solutions are given upon backtracking.
+Template: retract(@term)
+Exception:  the same as the built-in predicate $retract/1; the exception is raised by the auxiliary predicate retract_guard(Clause).
+
+retractall(Clause) removes from the knowledge base all the dynamic clauses matching with Clause (which must be at least partially instantiated).
+Template: retractall(@term)
+Exception:  the same as the built-in predicate $retract/1; the exception is raised by the auxiliary predicate retract_guard(Clause).
+
+current_op(Priority, Type, Name) is true if Priority is an integer in the range [0, 1200], Type is one of the fx, xfy, yfx, xfx values and Name is an atom, and as side effect it adds a new operator to the engine operator list.
+Template: current_op(?integer, ?term, ?atom) 
+
+current_prolog_flag(Flag,Value) is true if the value of the flag Flag is Value
+Template: current_prolog_flag(?atom,?term)
+
+flag_list(FlagList) unifies FlagList with the list of currently active flags.
+Template: flag_list(?term) 
+
+set_theory(TheoryText) is true if TheoryText is the text representation of a valid tuProlog theory, with the side effect of setting it as the new theory of the engine.
+Template: set_theory(@string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if TheoryText is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if TheoryText is not an atom (i.e. a string). Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+Exception: error(syntax_error(Message), syntax_error(Goal, Line, Position, Message)) if TheoryText is not a valid theory. Goal is the goal where the problem occurred, Message describes the error occurred, Line and Position report the error line and position inside the theory, respectively; if the engine is unable to provide either of them, the corresponding value is set to -1.
+
+add_theory(TheoryText) is true if TheoryText is the text representation of a valid tuProlog theory, with the side effect of appending it to the current theory of the engine.
+Template: add_theory(@string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if TheoryText is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if TheoryText is not an atom (i.e. a string). Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+Exception: error(syntax_error(Message), syntax_error(Goal, Line, Position, Message)) if TheoryText is not a valid theory. Goal is the goal where the problem occurred, Message describes the error occurred, Line and Position report the error line and position inside the theory, respectively; if the engine is unable to provide either of them, the corresponding value is set to -1.
+
+get_theory(TheoryText) is true, and TheoryText is the text representation of the current theory of the engine.
+Template: get_theory(-string)
+
+agent(TheoryText) is true, and spawns a tuProlog agent with the knowledge base provided as a Prolog textual form in TheoryText (the goal is described in the knowledge base).
+Template: agent(@string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if TheoryText is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if TheoryText is not an atom (i.e. a string). Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+
+agent(TheoryText, Goal) is true, and spawn a tuProlog agent with the knowledge base provided as a Prolog textual form in TheoryText, and solving the query Goal as a goal.
+Template: agent(@string, @term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if either TheoryText or G is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (1 or 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if TheoryText is not an atom (i.e. a string) or G is not a structure. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1 or 2), ValidType is the expected data type (atom or struct), Culprit is the wrong term found.
+
+spy is true and enables spy event notification.
+Template: spy
+
+nospy is true and disables spy event notification.
+Template: nospy 
+
+member(Element, List) is true if Element is an element of List
+Template: member(?term, +list)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if List is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 2), ValidType is the expected data type (list), Culprit is the wrong term found.
+
+length(List, NumberOfElements) is true in three different cases: (1) if List is instantiated to a list of determinate length, then Length will be unified with this length; (2) if List is of indeterminate length and Length is instantiated to an integer, then List will be unified with a list of length Length and in such a case the list elements are unique variables; (3) if Length is unbound then Length will be unified with all possible lengths of List.
+Template: length(?list, ?integer)
+
+append(What, To, Target) is true if Target list can be obtained by appending the To list to the What list.
+Template: append(?list, ?list, ?list)
+
+reverse(List, ReversedList) is true if ReversedList is the reverse list of List.
+Template: reverse(+list, -list)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if List is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (list), Culprit is the wrong term found.
+
+delete(Element, ListSource, ListDest) is true if ListDest list can be obtained by removing Element from the list ListSource.
+Template: delete(@term, +list, -list)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ListSource is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2), ValidType is the expected data type (list), Culprit is the wrong term found.
+
+element(Pos, List, Element) is true if Element is the Pos-th element of List (element numbering starts from 1).
+Template: element(@integer, +list, -term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if List is not a list. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 2), ValidType is the expected data type (list), Culprit is the wrong term found.
+
+quicksort(List, ComparisonPredicate, SortedList) is true iff
+SortedList contains the same elements as List, but sorted according to the criterion defined by ComparisonPredicate, which can be one of the following: '=:='/2 (expression equality), '=\\='/2 (expression inequality), '>'/2 (greater than), '<'/2 (less than), '>='/2 (greater than or equals to), '=<'/2 (equals to or less than), '=='/2 (term equality), '\\=='/2 (term inequality), '@>'/2 (term greater than), '@<'/2 (term less than), '@>='/2 (term greater than or equals to), '@=<'/2 (term equals to or less than).
+Template: quicksort(@list, @pred, -list)
+
+Library: iso
+
+bound(Term) is a synonym for the ground/1 predicate defined in BasicLibrary.
+Template: bound(+term)
+
+unbound(Term) is true if Term is not a ground term.
+Template: unbound(+term) 
+
+atom_length(Atom, Length) is true if the integer Length equals the number of characters in the name of atom Atom.
+Template: atom_length(+atom, ?integer)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Atom is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Atom is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+
+atom_concat(Start, End, Whole) is true if the Whole is the atom obtained by concatenating the characters of End to those of Start. If Whole is instantiated, then all decompositions of Whole can be obtained by backtracking.
+Template: atom_concat(?atom, ?atom, +atom)
+Template: atom_concat(+atom, +atom, -atom)
+
+sub_atom(Atom, Before, Length, After, SubAtom) is true if Sub-Atom is the sub atom of Atom of length Length that appears with Before characters preceding it and After characters following. It is re-executable.
+Template: sub_atom(+atom, ?integer, ?integer, ?integer, ?atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Atom is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+
+atom_chars(Atom,List) succeeds if List is a list whose elements are the one character atoms that in order make up Atom.
+Template: atom_chars(+atom, ?character_list)
+Template: atom_chars(-atom, ?character_list)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Atom is a variable and List is not a list, or, conversely, List is a variable and Atom is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (either 1 or 2), ValidType is the expected data type (atom or list, respectively), Culprit is the wrong term found.
+
+atom_codes(Atom, List) succeeds if List is a list whose elements are the character codes that in order correspond to the characters that make up Atom.
+Template: atom_codes(+atom, ?character_code_list)
+Template: atom_codes(-atom, ?character_code_list)
+
+char_code(Char, Code) succeeds if Code is a the character code that corresponds to the character Char.
+Template: char_code(+character, ?character_code)
+Template: char_code(-character, +character_code)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Code is a variable and Char is not a character (that is, an atom of length 1), or, conversely, Char is a variable and Code is not an integer. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (either 1 or 2), ValidType is the expected data type (character or integer, respectively), Culprit is the wrong term found.
+
+number_chars(Number, List) succeeds if List is a list whose elements are the one character atoms that in order make up Number.
+Template: number_chars(+number, ?character_list)
+Template: number_chars(-number, ?character_list)
+
+number_codes(Number, List) succeeds if List is a list whose elements are the codes for the one character atoms that in order make up Number.
+Template: number_codes(+number,?character_code_list)
+Template: number_codes(-number,?character_code_list)
+
+Library: io
+
+see(StreamName) is used to create/open an input stream; the predicate is true if StreamName is a string representing the name of a file to be created or accessed as input stream, or the string stdin selecting current standard input as input stream. NB: from tuProlog 2.8, the graphic atom is also allowed to set the input from the user GUI. Please note that such a choice somehow hardwires your code to work under the tuProlog GUIConsole or Android app only.
+Template: see(@atom)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if StreamName is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if StreamName is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+Exception: error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if StreamName is not the name of an accessible file. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ValidDomain is the expected domain (stream), Culprit is the wrong term found.
+
+seen is used to close the input stream previously opened; the predicate is true if the closing action is possible
+Template: seen
+
+seeing(StreamName) is true if StreamName is the name of the stream currently used as input stream.
+Template: seeing(?term)
+
+tell(StreamName) is used to create/open an output stream; the predicate is true if StreamName is a string representing the name of a file to be created or accessed as output stream, or the string stdout selecting current standard output as output stream.
+Template: tell(@atom)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if StreamName is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if StreamName is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+Exception: error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)) if StreamName is not the name of an accessible file. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ValidDomain is the expected domain (stream), Culprit is the wrong term found.
+
+told is used to close the output stream previously opened; the predicate is true if the closing action is possible.
+Template: told
+
+telling(StreamName) is true if StreamName is the name of the stream currently used as input stream.
+Template: telling(?term)
+
+put(Char) puts the character Char on current output stream; it is true if the operation is possible.
+Template: put(@char)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Char is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Char is not a character, i.e. an atom of length 1. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (1), ValidType is the expected data type (char), Culprit is the wrong term found.
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to write on the output stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, output), ObjectType is the type of the target object (stream), Culprit is the name of the output stream, and Message provides extra info about the occurred error.
+
+get0(Value) is true if Value is the next character (whose code can span on the entire ASCII codes) available from the input stream, or -1 if no characters are available; as a side effect, the character is removed from the input stream.
+Template: get0(?charOrMinusOne)
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to read from the input stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, input), ObjectType is the type of the target object (stream), Culprit is the name of the input stream, and Message provides extra info about the occurred error.
+
+get(Value) is true if Value is the next character (whose code can span on the range 32..255 as ASCII codes) available from the input stream, or -1 if no characters are available; as a side effect, the character (with all the characters that precede this one not in the range 32..255) is removed from the input stream.
+Template: get(?charOrMinusOne)
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to read from the input stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, input), ObjectType is the type of the target object (stream), Culprit is the name of the input stream, and Message provides extra info about the occurred error.
+
+tab(NumSpaces) inserts NumSpaces space characters (ASCII code 32) on output stream; the predicate is true if the operation is possible.
+Template: tab(+integer)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if NumSpaces is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if NumSpaces is not an integer number. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (integer), Culprit is the wrong term found.
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to write on the output stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, output), ObjectType is the type of the target object (stream), Culprit is the name of the output stream, and Message provides extra info about the occurred error.
+
+read(Term) is true if Term is Prolog term available from the input stream. The term must ends with the . character; if no valid terms are available, the predicate fails. As a side effect, the term is removed from the input stream.
+Template: read(?term)
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to read from the input stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, input), ObjectType is the type of the target object (stream), Culprit is the name of the input stream, and Message provides extra info about the occurred error.
+Exception: error(syntax_error(Message), syntax_error(Goal, Line, Position, Message)) if a syntax error occurred when reading from the input stream. Goal is the goal where the problem occurred, Message is the string read from the input that caused the error, while Line and Position are not applicable in this case and therefore default to -1.
+
+write(Term) writes the term Term on current output stream. The predicate fails if the operation is not possible.
+Template: write(@term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Term is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to write on the output stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, output), ObjectType is the type of the target object (stream), Culprit is the name of the output stream, and Message provides extra info about the occurred error.
+
+print(Term) writes the term Term on current output stream, removing apices if the term is an atom representing a string. The predicate fails if the operation is not possible.
+Template: print(@term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Term is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to write on the output stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, output), ObjectType is the type of the target object (stream), Culprit is the name of the output stream, and Message provides extra info about the occurred error.
+
+nl writes a new line control character on current output stream. The predicate fails if the operation is not possible.
+Template: nl
+Exception: error(permission_error (Operation, ObjectType, Culprit), permission_error(Goal, Operation, ObjectType, Culprit, Message)) if it was impossible to write on the output stream. Goal is the goal where the problem occurred, Operation is the operation to be performed (here, output), ObjectType is the type of the target object (stream), Culprit is the name of the output stream, and Message provides extra info about the occurred error.
+
+text_from_file(File, Text) is true if Text is the text contained in the file whose name is File.
+Template: text_from_file(+string, -string)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if File is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if File is not an atom. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (here, 1), ValidType is the expected data type (atom), Culprit is the wrong term found.
+Exception: error(existence_error(ObjectType, Culprit), existence_error(Goal, ArgNo, ObjectType, Culprit, Message)) if File does not exist. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (clearly, 1), ObjectType is the type of the missing object (stream), Culprit is the wrong term found and Message provides an error message (here, most likely file_not_found).
+
+agent_file(FileName) is true if FileName is an accessible file containing a Prolog knowledge base, and as a side effect it spawns a tuProlog agent provided with that knowledge base.
+Template: agent_file(+string)
+Exception:  the predicate maps onto the above text_from_file(File, Text) with File=FileName, so the same exceptions are raised.
+
+solve_file(FileName, Goal) is true if FileName is an accessible file containing a Prolog knowledge base, and as a side effect it solves the query Goal according to that knowledge base.
+Template: solve_file(+string, +goal)
+Exception:  the predicate maps onto the above text_from_file(File, Text) with File=FileName, so the same exceptions are raised. Moreover, it also raises the following specific exceptions:
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if G is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (in this case, 2).
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if G is not a callable goal. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (in this case, 2), ValidType is the expected data type (callable), Culprit is the wrong term found.
+
+consult(FileName) is true if FileName is an accessible file containing a Prolog knowledge base, and as a side effect it consult that knowledge base, by adding it to current knowledge base. The concept of accessible file has evolved over the tuProlog versions. As already discussed in Section ?for the include directive, in tuProlog versions up to 2.6, trying to load another Prolog file in a directory other than the current one would fail, unless the absolute sub-file name, or a relative path referred to the engine’s base folder is provided. From tuProlog 2.7 on, an enhanced mechanism has been included that enables tuProlog to look for Prolog files in all the subfolders of the project base folder. So, for instance, the file someOtherFile located in someOtherFolder (a folder other than the current one) can be loaded from the current folder by simply issuing a consult(someOtherFile) command. See also Section ?.
+Template: consult(+string)
+Exception:  the predicate maps onto the above text_from_file(File, Text) with File=FileName, so the same exceptions are raised. Moreover, it also raises the following specific exceptions:
+Exception: error(syntax_error(Message), syntax_error(Goal, Line, Position, Message)) the theory in FileName is not valid. Goal is the goal where the problem occurred, Message contains a description of the occurred error, Line and Position provide the line and position of the error in the theory text.
+
+rand_float(RandomFloat) is true if RandomFloat is a float random number generated by the engine between 0 and 1.
+Template: rand_float(?float)
+
+rand_int(Seed, RandomInteger) is true if RandomInteger is an integer random number generated by the engine between 0 and Seed.
+Template: rand_int(?integer, @integer) 
+
+Library: threads
+
+thread_create(-ThreadID,+Query) is true if a new thread can be created to solve the given Query; the unique ID of the newly-thread thread is unified with ThreadID.
+Template: thread_create(-term, +term)
+
+thread_id(?ThreadID) is true if the unique ID of the current thread can be unified with ThreadID.
+Template: thread_id(-variable)
+Template: thread_id(+number)
+
+thread_join(+ThreadID, ?Result) waits for the thread ThreadID to terminate, and unifies its result with Result. As a side effect, the terminated thread is removed from the system. The call fails if the thread ThreadID is in detached state (see thread_detach/1 below).
+Template: thread_join(+number, ?term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found.
+
+thread_read(+ThreadID, ?Result) waits for the thread ThreadID to terminate, and unifies its result with Result. Unlike thread_join, the terminated thread is not removed from the system and remains available for further reads. The call fails if the thread ThreadID is in detached state (see thread_detach/1 below).
+Template: thread_read(+number, ?term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found.
+
+thread_detach(+ThreadID) puts the specified thread in the detached state. Threads in this state cannot be read, or waited for, by other threads via thread_read/2 or thread_join/2, nor can they be queried via thread_next_sol/1. When a detached thread terminates, it leaves no traces of its previous computation.
+Template: thread_detach(+number)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found.
+
+thread_next_sol(+ThreadID) forces the specified thread to resume computing, exploring further solutions to the (initial) query.
+Template: thread_next_sol(+number)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found.
+
+thread_has_next(+ThreadID) succeeds if the specified thread can provide further solutions to the (initial) query.
+Template: thread_has_next(+number)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found.
+
+thread_execute(+ThreadID, +Query) is the backtrackable version of thread_create/2. It must be followed by some read operation to retrieve the subsequent solutions computed by the thread. Care must be taken in using thread_join/2 to retrieve alternative solutions (after the first one): on backtracking, thread_execute would fail, since thread_join removes the thread from the system.
+Template: thread_execute(+number, +term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found.
+
+thread_sleep(+ThreadID) suspends the current thread for the given time (expressed in milliseconds)
+Template: thread_sleep(+number)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if ThreadID is not an integer. Goal is the goal where the problem occurred, ValidType is the expected type (integer), Culprit is the wrong term actually found. 
+
+thread_send_msg(+QueueOrThreadID, +Msg) inserts a message in the queue identified by QueueOrThreadID. As a side effect, any thread suspended on that queue is awakened.
+Template: thread_send_msg(+term, +term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if QueueOrThreadID is neither an integer nor an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+thread_get_msg(+QueueOrThreadID, ?Msg) and thread_wait_msg(+QueueOrThreadID, ?Msg) look into the queue identified by QueueOrThreadID, for a message unifying with Msg. If none exists, the primitives block until a message arrives. Their only difference is that thread_get_msg removes the message from the queue while reading it, while thread_wait_msg leaves it there.
+Template: thread_get_msg(+term, ?term)
+Template: thread_wait_msg(+term, ?term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if QueueOrThreadID is neither an integer nor an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+thread_remove_msg(+QueueOrThreadID, ?Msg) and thread_peek_msg(+QueueOrThreadID, ?Msg) look into the queue identified by QueueOrThreadID, for a message unifying with Msg. If none exists, both primitives fail. Upon success, thread_remove_msg removes the message from the queue, while thread_peek_msg leaves it there.
+Template: thread_remove_msg(+term, ?term)
+Template: thread_peek_msg(+term, ?term)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if QueueOrThreadID is neither an integer nor an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+msg_queue_create(+Queue) creates a new public queue named Queue; this queue is not associated to any specific thread.
+Template: msg_queue_create(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Queue is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (atom), Culprit is the wrong term actually found.
+
+msg_queue_destroy(+Queue) deletes the public queue named Queue. Please note that private queues, implicitly associated to each thread, cannot be destroyed.
+Template: msg_queue_destroy(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if Queue is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (atom), Culprit is the wrong term actually found.
+
+msg_queue_size(+QueueOrThreadID, ?Size) unifies the number of elements in the queue QueueOrThreadID with Size.
+Template: msg_queue_size(+term, ?atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if QueueOrThreadID is neither an integer number nor an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found. 
+
+mutex_create(+MutexID) creates a new mutex identified by MutexID. If a mutex identified by the MutexID already exists, the current mutex is reused.
+Template: mutex_create(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if MutexID is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+mutex_destroy(+MutexID) destroys the mutex identified by MutexID.
+Template: mutex_destroy(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if MutexID is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+mutex_lock(+MutexID) locks the mutex identified by MutexID, or suspends if it is already locked. If such a mutex does not exist yet, it is created automatically.
+Template: mutex_lock(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if MutexID is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+mutex_trylock(+MutexID) tries to lock the mutex identified by MutexID, or fails if it is already locked by another thread.
+Template: mutex_trylock(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if MutexID is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+mutex_isLocked(+MutexID) succeeds if the mutex identified by MutexID is currently lockedby some thread.
+Template: mutex_isLocked(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if MutexID is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+mutex_unlock(+MutexID) unlocks the mutex identified by MutexID.
+Template: mutex_unlock(+atom)
+Exception: error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)) if MutexID is not an atom. Goal is the goal where the problem occurred, ValidType is the expected type (integer or atom), Culprit is the wrong term actually found.
+
+mutex_unlock_all unlocks all the mutexes that are currently blocked by the current thread.
+Template: mutex_unlock_all
+
+Library: dcg
+
+phrase(Category, List) is true if the list List can be parsed as a phrase (i.e. sequence of terminals) of type Category. Category can be any term which would be accepted as a nonterminal of the grammar (or in general, it can be any grammar rule body), and must be instantiated to a non-variable term at the time of the call. This predicate is the usual way to commence execution of grammar rules. If List is bound to a list of terminals by the time of the call, the goal corresponds to parsing List as a phrase of type Category; otherwise if List is unbound, then the grammar is being used for generation.
+Template: phrase(+term, ?list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Category is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+
+phrase(Category, List, Rest) is true if the segment between the start of list List and the start of list Rest can be parsed as a phrase (i.e. sequence of terminals) of type Category. In other words, if the search for phrase Phrase is started at the beginning of list List, then Rest is what remains unparsed after Category has been found. Again, Category can be any term which would be accepted as a nonterminal of the grammar (or in general, any grammar rule body), and must be instantiated to a non variable term at the time of the call.
+Template: phrase(+term, ?list, ?rest)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Category is a variable. Goal is the goal where the problem occurred, ArgNo indicates the argument that caused the problem (obviously, 1).
+
+Library: iso-io
+
+current_input unifies the current input stream with the given argument.
+Template: current_input(@Stream_or_alias)
+
+current_output unifies the current output stream with the given argument.
+Template: current_output(@Stream_or_alias)
+
+set_input associates the current input to the provided argument, which can be either a stream_term or an alias.
+Template: set_input(@Stream_or_alias)
+Exception: error(instantiation_error, instantiation_error) if Stream_or_alias is a variable.
+Exception: error(domain_error, domain_error(stream_or_alias, Stream_or_alias)) if Stream_or_alias is neither a stream term nor a valid stream alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if Stream_or_alias is not associated to an open stream.
+Exception: error(permission_error, permission_error(input, stream, Stream_or_alias)) if Stream_or_alias is associated to an output stream.
+
+set_output associates the current output to the provided argument, which can be either a stream_term or an alias.
+Template: set_output(@Stream_or_alias)
+Exception: error(instantiation_error, instantiation_error) if Stream_or_alias is a variable.
+Exception: error(domain_error, domain_error(stream_or_alias, Stream_or_alias)) if Stream_or_alias is neither a stream term nor a valid stream alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if Stream_or_alias is not associated to an open stream.
+Exception: error(permission_error, permission_error(output, stream, Stream_or_alias)) if Stream_or_alias is associated to an input stream.
+
+flush_output flushes the output onto the stream associated to the provided argument, which can be either a stream_term or an alias; if no argument is provided, the default output stream is flushed.
+Template: flush_output(@Stream_or_alias)
+Template: flush_output
+Exception: error(instantiation_error, instantiation_error) if Stream_or_alias is a variable.
+Exception: error(domain_error, domain_error(stream_or_alias, Stream_or_alias)) if Stream_or_alias is not a valid stream term or alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if Stream_or_alias is not associated to an open stream.
+Exception: error(permission_error, permission_error(output, stream, Stream_or_alias)) if Stream_or_alias is associated to an input stream.
+
+stream_property verifies whether the given stream has the given property, unifying Property with the corresponding value.
+Template: stream_property(?Stream, ?Property)
+Exception: error(instantiation_error, instantiation_error) if Stream is a variable.
+Exception: error(domain_error, domain_error(stream, Stream)) if Stream is not a stream term.
+Exception: error(domain_error, domain_error(stream_property, Property)) if Property is neither a variable nor a stream property.
+Exception: error(existence_error, existence_error(stream, Stream)) if Stream is not associated to an open stream.
+
+at_end_of_stream succeeds if the end_of_stream property has either the end_of_stream or the past_end_of_stream value. The zero-argument version checks the current input stream.
+Template: at_end_of_stream(@Stream_or_alias)
+Template: at_end_of_stream
+Exception: error(instantiation_error, instantiation_error) if Stream_or_alias is a variable.
+Exception: error(domain_error, domain_error(stream, Stream_or_alias)) if Stream_or_alias is not a valid stream term or alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if Stream_or_alias is not associated to an open stream.
+
+set_stream_position is true if the stream position can be successfully set to the new Position argument.
+Template: set_stream_position(@Stream_or_alias, @Position)
+Exception: error(instantiation_error, instantiation_error) if either Stream_or_alias or Position is a variable.
+Exception: error(domain_error, domain_error(stream, Stream_or_alias)) if Stream_or_alias is not a valid stream term or alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if Position is neither a valid stream position, nor a variable.
+Exception: error(permission_error, permission_error(reposition, stream, Stream_or_alias)) if the reposition property of this stream is false.
+
+open succeeds if the stream can be opened according to the mode and options desired.
+Template: open(@Source_Sink, @Mode, -Stream)
+Template: open(@Source_Sink, @Mode, -Stream, @Options)
+Exception: error(instantiation_error, instantiation_error) if either Source_sink or Mode is a variable, or if Options is a partial list or such a list contains a variable.
+Exception: error(type_error, type_error(atom, Mode)) if Mode is a neither an atom nor a variable.
+Exception: error(type_error, type_error(list, Options)) if Options is neither a list nor a partial list.
+Exception: error(type_error, type_error(variable, Stream)) if Stream is not a variable.
+Exception: error(domain_error, domain_error(stream_sink, Source_sink)) if Source_sink is not a valid stream source or sink.
+Exception: error(domain_error, domain_error(io_mode, Mode)) if Mode is an atom other than the prescribed input or output.
+Exception: error(domain_error, domain_error(stream_option, Element)) if an Element of the options list is neither a variable nor a valid stream option.
+Exception: error(existence_error, existence_error(stream, Source_sink)) if the source /sink stream Source_sink does not exist.
+Exception: error(permission_error, permission_error(open, source_sink, Source_sink)) if the specified source/sink stream cannot be opened.
+Exception: error(permission_error, permission_error(open, source_sink, alias(A))) if alias(A) is in the options list, and A is already bound to another open stream.
+Exception: error(permission_error, permission_error(open, source_sink, reposition(true))) if reposition(true) is in the options list, but the stream cannot be repositioned.
+
+close closes the given stream, eliminating any associated alias(es). If the force(true) option is specified, the stream is immediately closed, ignoring any data not yet transferred (in the case of output streams); in any other case, the stream is flushed before closing. If the stream to be closed is the current stream, the latter will be associated to the standard input or output, as appropriate.
+Template: close(@Stream_or_alias)
+Template: close(@Stream_or_alias, @Options)
+Exception: error(instantiation_error, instantiation_error) if either Stream_or_alias is a variable, or Options is a partial list or such a list contains a variable.
+Exception: error(type_error, type_error(list, Options)) if Options is neither a list nor a partial list.
+Exception: error(domain_error, domain_error(stream_or_alias, Stream_or_alias)) if Stream_or_alias is not a valid stream term or alias.
+Exception: error(domain_error, domain_error(close_option, Element)) if an Element of the options list is neither a variable nor a valid close option.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if the stream Stream_or_alias is not associated to an open stream.
+Exception: error(permission_error, permission_error(open, source_sink, Source_sink)) if the specified source/sink stream cannot be opened.
+Exception: error(permission_error, permission_error(open, source_sink, alias(A))) if alias(A) is in the options list, and A is already bound to another open stream.
+Exception: error(permission_error, permission_error(open, source_sink, reposition(true))) if reposition(true) is in the options list, but the stream cannot be repositioned.
+
+get_char and get_code read the next char from the given stream, and unify it with the second argument—a character or an integer representing the character code, respectively; the single-argument version of these predicates read from the current input stream. Special cases are treated as follows: 
+- if the stream position is past_end_of_stream, the action to be performed depends on the stream options specified when the stream was opened—namely, eof_action(Action)(see above); 
+- if the stream position is end_of_stream, the EOF character is returned, and the stream position becomes past_end_of_stream. 
+Template: get_char(@Stream_or_alias, ?Character)
+Template: get_char(?Character)
+Template: get_code(@Stream_or_alias, ?Character_code)
+Template: get_code(?Character_code)
+Exception: error(instantiation_error, instantiation_error) if either Stream_or_alias is a variable.
+Exception: error(type_error, type_error(in_character, Character)) if Character is neither a variable nor a character.
+Exception: error(type_error, type_error(integer, Character_code)) if Character_code is neither a variable nor an integer.
+Exception: error(domain_error, domain_error(stream_or_alias, Stream_or_alias)) if Stream_or_alias is not a valid stream term or alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if the stream Stream_or_alias is not associated to an open stream.
+Exception: error(permission_error, permission_error(input, stream, Stream_or_alias)) if the stream in not an input stream.
+Exception: error(permission_error, permission_error(input, binary_stream, Stream_or_alias)) if the stream in not a text stream.
+Exception: error(permission_error, permission_error(input, past_end_of_stream, Stream_or_alias)) if the stream status is end_of_stream(past) and the option eof_action(true) is active.
+Exception: error(representation_error, representation_error(Character)) if the entity read from the stream is not a character.
+Exception: error(representation_error, representation_error(Character_code)) if the entity read from the input stream is an integer, but does not represent a character.
+
+peek_char and peek_code work identically to the get_char and get_code above, but leave the stream position unaltered after reading, so that a subsequent read operation returns the same character.
+Template: peek_char(@Stream_or_alias, ?Character)
+Template: peek_char(?Character)
+Template: peek_code(@Stream_or_alias, ?Character_code)
+Template: peek_code(?Character_code)
+Exception: : the same as above.
+
+put_char and put_code are the writing counterparts of the get_char and get_code above; syntax and exceptions raised are basically identical, but the Character or Character_code must be ground in this case—otherwise, an instantiation_error occurs.
+Template: put_char(@Stream_or_alias, +Character)
+Template: put_char(+Character)
+Template: put_code(@Stream_or_alias, +Character_code)
+Template: put_code(+Character_code)
+Exception: : the same as above, plus an error(instantiation_error, instantiation_error) if Character or Character_code is a variable.
+
+nl inserts a newline in the given stream.
+Template: nl(@Stream_or_alias)
+Template: nl
+Exception: error(instantiation_error, instantiation_error) if either Stream_or_alias is a variable.
+
+read_term succeeds if a term can be read from the given stream that can be unified with the Term argument: Options are considered only if the above unification succeeds. The read predicate works analogously, but no options can be specified. As usual, the no-stream versions (read_term/2 and read/1) operate on the current input stream.
+Template: read_term(@Stream_or_alias, ?Term, +Options)
+Template: read_term(?Term, +Options)
+Template: read(@Stream_or_alias, ?Term)
+Template: read(?Term)
+Exception: error(instantiation_error, instantiation_error) if either Stream_or_alias is a variable.
+Exception: error(instantiation_error, instantiation_error) if Options is either a partial list, or an element in the list is a variable.
+Exception: error(type_error, type_error(list, Options)) if Options is neither a list nor a partial list.
+Exception: error(domain_error, domain_error(stream_or_alias, Stream_or_alias)) if Stream_or_alias is not a valid stream term or alias.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if the stream Stream_or_alias is not associated to an open stream.
+Exception: error(domain_error, domain_error(read_option, Element)) if an element in the option list is neither a variable nor a valid read option.
+Exception: error(existence_error, existence_error(stream, Stream_or_alias)) if Stream_or_alias is not associated to an open stream.
+Exception: error(permission_error, permission_error(input, stream, Stream_or_alias)) if the stream in not an input stream.
+Exception: error(permission_error, permission_error(input, binary_stream, Stream_or_alias)) if the stream in not a text stream.
+Exception: error(permission_error, permission_error(input, past_end_of_stream, Stream_or_alias)) if the stream status is end_of_stream(past) and the option eof_action(true) is active.
+Exception: error(representation_error, representation_error(Flag)) if the entity read from the stream does not comply with the rules expressed by Flag, which can be max_arity, max_integer, min_integer.
+Exception: error(representation_error, representation_error( imp_dep_atom)) if one or more characters in the input stream cannot form a valid token, or the character sequence cannot be transformed into a valid atom according to the current operator notation.
+
+These predicates are the writing counterparts of the read_term and read predicates above: the given term is written on the given stream according to the specified write options, or following the default values in the write, writeq and write_canonical cases. Basically, the same considerations and exceptions above still apply.
+Template: write_term(@Stream_or_alias, @Term, +Options)
+Template: write_term(@Term, +Options)
+Template: write(@Stream_or_alias, @Term)
+Template: write(@Term) Template: writeq(@Stream_or_alias, @Term)
+Template: writeq(@Term)
+Exception: : the same as above. When a term is written via write_term/3, the following rules apply:
+- if the term is a variable, a character is produced of the form _string where the string following the underscore are implementation-dependent. A variable occurring multiple times in the term is obviously converted into the same _string for each occurrence. 
+- if the term is an integer number, the corresponding string is produced; negative values starts with -. 
+- if the term is a real number, the corresponding string is produced; negative values starts with -. If the write option quoted is true, the produced string ensures that a subsequent read_term can read it back correctly. 
+- if the term is an atom that could not be read back unless quoted, and the write option quoted is true, the produced string is quoted; otherwise it is not. 
+- if the term contains a main functor that is not an operator, or the write option ignore_ops is true, the term is written in the canonical form (Table ?); otherwise it is not. 
+- if, instead, the term contains a main that is an operator and the write option ignore_ops is true, the term is written in the operator notation ((Table ?). 
+
+get_byte, peek_byte and put_byte are the binary counterparts of the get_char, peek_char and put_char above; syntax and exceptions raised are basically identical, with obvious changes (i.e., the wrong type of stream here is text instead of binary).
+Template: get_byte(@Stream_or_alias, ?Byte)
+Template: get_byte(?Byte)
+Template: peek_byte(@Stream_or_alias, ?Byte)
+Template: peek_byte(?Byte)
+Template: put_byte(@Stream_or_alias, +Byte)
+Template: put_byte(+Byte)
+Exception: : see description above.
+
+Library: socket
+
+tcp_socket_server_open(+Address, -Socket, +Options) is true if Address represents a valid Internet address, and Socket can be unified with a newly-created server socket; Options is a possibly-empty list of options—currently, only the maximum number od connection request can be specified in the form of the backlog(N) term: if unspecified, the default value is backlog(0), meaning the queue is unlimited.
+Template: tcp_socket_server_open(+term, -term, +list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Socket is not a variable, or the address length is not equal to 5 during the transformation of Address from the IP:Port form to the byte array and port number inner form.
+
+tcp_socket_server_accept(+ServerSocket, -ClientAddress, -ClientSlaveSocket) is true if ServerSocket represents a valid server socket address, and ClientAddress can be unified with the client address in the Address:Port form, and ClientSlaveSocket can be unified with the newly-created client socket.
+Template: tcp_socket_server_accept(+term, -term, -term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if ServerSocket is a variable, or is not bound to server socket.
+
+tcp_socket_server_close(+ServerSocket) is true if ServerSocket represents a valid server socket; as a side effect, the socket is closed.
+Template: tcp_socket_server_close(+term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if ServerSocket is a variable, or is not bound to server socket.
+
+tcp_socket_client_open(+Address, -Socket) is true if Address represents a valid Internet address in the Address:Port form, a server is waiting for incoming connection at that address, and Socket is unified with a newly-created socket.
+Template: tcp_socket_client_open(+term, -term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Socket is not a variable, or the address length is not equal to 5 during the transformation of Address from the IP:Port form to the byte array and port number inner form.
+
+write_to_socket(+Socket, +Msg) is true if Socket represents a valid socket with an open associated output stream, and Msg is a valid term representing the message to be sent; as a side effect, the message is sent onto the stream.
+Template: write_to_socket(+term, +term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Socket is a variable, or is not bound to client socket, or Msg is a variable.
+
+read_from_socket(+Socket, -Msg, +Options) is true if Socket represents a valid socket with an open associated input stream, and Options is a valid option list—currently, only a timeout in milliseconds can be specified; as a side effect, a message is read from the stream and unified with Msg. If no message is available, the primitive suspends until one arrives (synchronous behaviour).
+Template: read_from_socket(+term, -term, +list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Socket is a variable, or is not bound to client socket, or Msg is a variable.
+
+aread_from_socket(+Socket, +Options) is the asynchronous version of the above primitive; again, it is true if Socket represents a valid socket with an open associated input stream, and Options is a valid option list. As a side effect, a message is eventually read from the stream and asserted into the current prolog theory via asserta. Two options are available: the first makes it possible to set a timeout in milliseconds, as above; the other makes it possible to specify that the message is eventually asserted at the end of the current theory (i.e. via assertz) instead of at the top (i.e. via asserta, the default behaviour).
+Template: aread_from_socket(+term, +list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Socket is a variable, or is not bound to client socket (only client sockets can asynchronously read from a server).
+
+udp_socket_open(+Address, -DatagramSocket) is true if Address represents a valid Internet address in the Address:Port form, a server is waiting for incoming connection at that address, and DatagramSocket is unified with a newly-created datagram socket.
+Template: udp_socket_open(+term, -term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if Socket is not a variable, or the address length is not equal to 5 during the transformation of Address from the IP:Port form to the byte array and port number inner form.
+
+udp_socket_close(DatagramSocket) is true if DatagramSocket represents a valid datagram socket; as a side effect, the socket is closed.
+Template: udp_socket_close(+term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if DatagramSocket is a variable, or is not bound to datagram socket.
+
+udp_send(-DatagramSocket, +Msg, +AddressTo) is true if Msg is a valid term representing the message to be sent, and AddressTo represents the destination address in the Address:Port form; as a side effect, DatagramSocket is bound to the datagram socket associated to the output stream, and the message is sent onto the stream.
+Template: udp_send(+term, +term, +term)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if DatagramSocket is a not variable, or the address length is not equal to 5 during the transformation of AddressTo from the IP:Port form to the byte array and port number inner form.
+
+udp_receive(-DatagramSocket, -Msg, +AddressTo, +Options) is true if AddressTo represents the destination address in the Address:Port form, and Options is a possibly-empty option list; currently, the available options are max_msg_size(+Size), whose default value is 4096 bytes, and timeout(+Time), which specifies a timeout: a value of 0 stands for infinite waiting. Upon reception of a message, as a side effect, the Msg term is unified with the incoming message, and DatagramSocket is bound to a datagram socket associated to the input stream.
+Template: udp_receive(+term, +term, +term, +list)
+Exception: error(instantiation_error, instantiation_error(Goal, ArgNo)) if DatagramSocket is not a variable, or the address length is not equal to 5 during the transformation of AddressTo from the IP:Port form to the byte array and port number inner form.
+
+Library: math
+
+Template: sin(+expr)
+
+Template: cos(+expr)
+
+Template: atan(+expr)
+
+Template: exp(+expr)
+
+Template: log(+expr)
+
+Template: sqrt(+expr)
+
+Template: abs(+expr)
+
+Template: sign(+Expr)
+
+Template: floor(+expr)
+
+Template: ceiling(+expr)
+
+Template: round(+expr)
+
+Template: truncate(+expr)
+
+Template: float(+expr)
+
+Template: float_integer_part(+expr)
+
+Template: float_fractional_part(+expr) 
+
+Template: div(+expr, +expr)
+
+Template: mod(+expr, +expr)
+
+Template: rem(+expr, +expr)
+
+Library: java
+
+type cast the as inx operator is used to explicitly cast method arguments to a given type, typically for exploiting overloading resolution: ObjectRef as Type
+Template: as
+
+destroy_object(ObjectRef) removes the binding possibly established between ObjectRef and an underlying Java object.
+Template: destroy_object(@object_ref)
+
+Template: java_array_get(ArrayRef, Index, Object)
+
+Template: java_array_get_boolean(ArrayRef, Index, Value)
+
+Template: java_array_get_byte(ArrayRef, Index, Value)
+
+Template: java_array_get_char(ArrayRef, Index, Value)
+
+Template: java_array_get_double(ArrayRef, Index, Value)
+
+Template: java_array_get_float(ArrayRef, Index, Value)
+
+Template: java_array_get_int(ArrayRef, Index, Value)
+
+Template: java_array_get_long(ArrayRef, Index, Value)
+
+Template: java_array_get_short(ArrayRef, Index, Value)
+
+java_array_length(ArrayRef, ArrayLength) is true ifArrayLength is the length of the Java array referenced by the term ArrayRef.
+Template: java_array_length(@term, ?integer)
+
+Template: java_array_set(ArrayRef, Index, Object)
+
+Template: java_array_set_boolean(ArrayRef, Index, Value)
+
+Template: java_array_set_byte(ArrayRef, Index, Value)
+
+Template: java_array_set_char(ArrayRef, Index, Value)
+
+Template: java_array_set_double(ArrayRef, Index, Value)
+
+Template: java_array_set_float(ArrayRef, Index, Value)
+
+Template: java_array_set_int(ArrayRef, Index, Value)
+
+Template: java_array_set_long(ArrayRef, Index, Value)
+
+Template: java_array_set_short(ArrayRef, Index, Value)
+
+java_call(ObjectRef, Method, ResultRef) is the basic method implementing the inx <-/2 and (<-,returns)/3 operators below. It is true i ObjectRef is a ground term bound to a Java object, and this provides a method Method (that is, whose name is the functor name and whose arguments are the arguments of the compound term Method); ResultRef is a Prolog term bound to the returned value. ObjectRef takes the form class(ClassName ) for static methods. If needed, the Prolog anonymous variable can be used as an argument for the Java null value.
+Template: java_call(@obj_id, @method_signature, ?ResultRef)
+Exception: java.lang.NoSuchMethodException(Cause, Message, StackTrace) if the specied method could not be found in the target object/class, or the method arguments are invalid.
+
+java_class(SourceText, ClassName, PathList, ObjectRef) creates the new Java class ClassName from the provided SourceText , compiles it dynamically using to the classes in the provided PathList, and binds the result { a suitable instance of the meta-class Class { with the Prolog term ObjectRef.
+Template: java_class(@source, @classname, @path, ?obj_ref)
+Exception: java.lang.ClassNotFoundException(Cause, Message, StackTrace) if ClassName does not identify a valid class name in the package hierarchy on the local le system.
+Exception: java.lang.IOException(Cause, Message, StackTrace) if SourceText contains errors that prevent the class from being compiled.
+Exception: java.lang.Exception(Cause, Message, StackTrace) if ObjectRef is already bound to another Java object.
+
+java_object(ClassName, ArgList, ObjectRef) instantiates a new instance of class ClassName (full class name on the current class path) and initializes it via the Java constructor matching the arguments in ArgList ; the newly created Java object is bound to the Prolog term ObjectRef , which can be any ground term (except for numbers) or a Prolog variable (in which case it is bound to an automatically-generated ground term). By default, such a binding is not undone on backtracking, unless the java object backtrackable ag is set to true (see Section 7.1.2).
+Template: java_object(+class_name, +arg_list, ?object_ref)
+Exception: java.lang.ClassNotFoundException(Cause, Message, StackTrace) if ClassName does not identify a valid class name on the local le system.
+Exception: java.lang.NoSuchMethodException(Cause, Message, StackTrace) if the specied constructor could not be found.
+Exception: java.lang.reflect.InvocationTargetException(Cause, Message, StackTrace) if the constructor arguments are invalid|for instance, because they are not ground.
+Exception: java.lang.Exception(Cause, Message, StackTrace) if ObjectRef is already bound to another Java object.
+
+Template: java_object_bt
+
+Template: java_object_nb
+
+java_object_string(ObjectRef, String) is true if String is the string representation of the Java object bound to the term ObjectRef, according to the semantics of the object's own toString method.
+Template: java_object_string(@obj_id, ?string)
+
+Template: returns
+
+Template: register(ObjectRef)
+
+Template: unregister(ObjectRef)
+
+get_classpath(PathList) is true if PathList is an unbound variable, which is unied with the list of strings representing the current class paths. No side eects occur on the tuProlog class loader conguration.
+Template: get_classpath(?path_list)
+
+set_classpath(PathList) is true if PathList is a list of strings representing class paths. As a side eect, the tuProlog class loader of the current tuProlog engine is permanently congured to load classes also from the specied paths, other than the default ones.
+Template: set_classpath(+path_list)
+
+ObjectRef <- Method calls the Java method represented by the Method compound term on the target Java object ObjectRef. The same argument specications of java call above apply.
+Template: '<-'(@obj_id, @method signature)
