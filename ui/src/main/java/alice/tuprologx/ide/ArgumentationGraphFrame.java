@@ -17,17 +17,19 @@ import edu.uci.ics.jung.visualization.renderers.Renderer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ArgumentationGraphFrame {
 
     public static final String BUILD_LABEL_SETS = "buildLabelSets";
     private final JScrollPane argumentationGraph;
-    private Map<String, List<String>> vertices;
+    private List<Argument> vertices;
+    private List<Attack> attacks;
 
     public ArgumentationGraphFrame(JScrollPane argumentationGraph) {
         this.argumentationGraph = argumentationGraph;
@@ -48,8 +50,8 @@ public class ArgumentationGraphFrame {
         final VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
         vv.setPreferredSize(new Dimension(500,500));
         vv.getRenderContext().setVertexFillPaintTransformer(i -> {
-            if (this.vertices.get("in").contains(i)) return Color.GREEN;
-            if (this.vertices.get("out").contains(i)) return Color.RED;
+            if (Argument.labelFromIdentifier(i, this.vertices).equals("in")) return Color.GREEN;
+            if (Argument.labelFromIdentifier(i, this.vertices).equals("out")) return Color.RED;
             return Color.GRAY;
         });
         vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -64,42 +66,189 @@ public class ArgumentationGraphFrame {
 
     private Graph<String, String> buildGraph(Prolog engine) {
 
-        final Struct labelling = engine.getTheory()
-            .getClauses().stream()
-            .filter(x -> x.match(engine.termSolve("argsLabelling(X, Y, Z)")))
-            .map(x -> (Struct) x)
-            .findAny()
-            .orElseThrow(IllegalStateException::new);
-
-        this.vertices = ImmutableMap.of(
-            "in", parseLabellingArg(labelling,0),
-            "out", parseLabellingArg(labelling,1),
-            "und", parseLabellingArg(labelling,2)
-        );
+        this.vertices = Argument.mineArguments(engine);
+        this.attacks = Attack.mineAttacks(engine, vertices);
 
         final Graph<String, String> graph = new SparseMultigraph<>();
 
-        this.vertices.entrySet().stream()
-                .flatMap(x -> x.getValue().stream())
-                .forEach(graph::addVertex);
+        this.vertices.stream()
+            .map(Argument::getIdentifier)
+            .forEach(graph::addVertex);
 
-        engine.getTheory()
-            .getClauses().stream()
-            .filter(x -> x.match(engine.termSolve("attack(X, Y)")))
-            .forEach(x -> {
-                List<String> r = regexResults(x.toString());
-                graph.addEdge(r.get(0).concat(r.get(1)), r.get(0), r.get(1), EdgeType.DIRECTED);
-            });
+        this.attacks.forEach(x ->
+                graph.addEdge(x.getAttacker().concat(x.getAttacked()),
+                        x.getAttacker(),
+                        x.getAttacked(),
+                        EdgeType.DIRECTED));
 
         return graph;
     }
+}
 
-    private List<String> parseLabellingArg(Struct labelling, int index) {
+class Attack {
+
+    private final String attacker;
+    private final String attacked;
+
+    Attack(final String attacker, final String attacked) {
+        this.attacker = attacker;
+        this.attacked = attacked;
+    }
+
+    public String getAttacker() {
+        return this.attacker;
+    }
+
+    public String getAttacked() {
+        return this.attacked;
+    }
+
+    static List<Attack> mineAttacks(final Prolog engine, final List<Argument> arguments) {
+        return engine.getTheory()
+            .getClauses().stream()
+            .filter(x -> x.match(engine.termSolve("attack(X, Y)")))
+            .map(x -> RegexHelpers.regexResults(x.toString()))
+            .map(x -> new Attack(
+                Argument.identifierFromRules(x.get(0), arguments),
+                Argument.identifierFromRules(x.get(1), arguments)))
+            .collect(Collectors.toList());
+    }
+}
+
+class Argument {
+
+    private final String label;
+    private final String rawRules;
+    private final List<String> rules;
+    private final List<String> topRule;
+    private final List<String> subargs;
+
+    private String identifier;
+    private String conclusion;
+
+    public Argument(final String label, final String rules) {
+        this.label = label;
+        this.rawRules = rules;
+        this.rules = new LinkedList<>(Arrays.asList(rules.trim().split(",")));
+        this.topRule = new LinkedList<>(Arrays.asList(rules.trim().split(",")));
+        this.subargs = new LinkedList<>();
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public String getIdentifier() {
+        return this.identifier;
+    }
+
+    public String getTopRule() {
+        return this.topRule.get(0);
+    }
+
+    public String getConclusion() {
+        return this.conclusion;
+    }
+
+    public List<String> getRules() {
+        return this.rules;
+    }
+
+    public List<String> getSubargs() {
+        return this.subargs;
+    }
+
+    public void setIdentifier(final String identifier) {
+        this.identifier = identifier;
+    }
+
+    public void setConclusion(final String conclusion) {
+        this.conclusion = conclusion;
+    }
+
+    public void addSubarg(final String subarg, final List<String> rules) {
+        this.subargs.add(subarg);
+        this.topRule.removeAll(rules);
+    }
+
+    static String identifierFromRules(final String rawRules, final List<Argument> vertices) {
+        return vertices.stream().filter(x -> x.rawRules.equals(rawRules))
+                .map(Argument::getIdentifier)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    static String labelFromIdentifier(final String identifier, final List<Argument> vertices) {
+        return vertices.stream().filter(x -> x.identifier.equals(identifier))
+                .map(Argument::getLabel)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    static List<Argument> mineArguments(final Prolog engine) {
+
+        final Struct labelling = engine.getTheory()
+                .getClauses().stream()
+                .filter(x -> x.match(engine.termSolve("argsLabelling(X, Y, Z)")))
+                .map(x -> (Struct) x)
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+
+        final Map<String, List<String>> rawVertices = ImmutableMap.of(
+                "in", RegexHelpers.parseLabellingArg(labelling,0),
+                "out", RegexHelpers.parseLabellingArg(labelling,1),
+                "und", RegexHelpers.parseLabellingArg(labelling,2)
+        );
+
+        final List<Argument> verts = rawVertices.entrySet()
+                .stream()
+                .flatMap(x -> x.getValue().stream()
+                        .map(y -> new Argument(x.getKey(), y)))
+                .sorted(Comparator.comparing(x -> x.getRules().size()))
+                .collect(Collectors.toList());
+
+        IntStream.range(0, verts.size())
+                .forEach(x -> verts.get(x).setIdentifier("A" + x));
+
+        verts.stream()
+                .filter(x -> x.getRules().size() > 1)
+                .forEach(x -> {
+                    final Argument subarg = verts.stream()
+                            .filter(a -> !a.getIdentifier().equals(x.getIdentifier()))
+                            .reduce((a, b) -> {
+                                if (x.getRules().containsAll(b.getRules()) &&
+                                        b.getRules().size() >= a.getRules().size())
+                                    return b;
+                                return a;
+                            }).orElseThrow(IllegalStateException::new);
+
+                    x.addSubarg(subarg.getIdentifier(), subarg.getRules());
+                });
+
+        final List<String> theory = Arrays.asList(
+                engine.getTheory().getText().split("\\n"));
+
+        verts.forEach(x ->
+            x.setConclusion(
+                theory.stream()
+                    .map(y -> y.replaceAll("\\s+",""))
+                    .filter(y -> y.startsWith(x.getTopRule() + ":"))
+                    .map(y -> y.split("=>")[1])
+                    .findAny()
+                    .orElseThrow(IllegalStateException::new)));
+
+        return verts;
+    }
+}
+
+class RegexHelpers {
+
+    public static List<String> parseLabellingArg(final Struct labelling, final int index) {
         return regexResults(labelling.getArg(index)
                 .toString().replaceAll("^.|.$", ""));
     }
 
-    private List<String> regexResults(String target) {
+    public static List<String> regexResults(final String target) {
         final List<String> matches = new LinkedList<>();
         final Matcher m = Pattern
                 .compile("(?<=\\[\\[).*?(?=\\])")
