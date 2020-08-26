@@ -23,35 +23,61 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class ArgumentationGraphFrame {
 
-    public static final String BUILD_LABEL_SETS = "buildLabelSets";
-    private final JScrollPane argumentationGraph;
-    private List<Argument> vertices;
+    private static final String BUILD_LABEL_SETS = "buildLabelSets";
+
+    private final JScrollPane graphPane;
+    private final JScrollPane theoryPane;
+    private List<Argument> arguments;
     private List<Attack> attacks;
 
-    public ArgumentationGraphFrame(JScrollPane argumentationGraph) {
-        this.argumentationGraph = argumentationGraph;
+    public ArgumentationGraphFrame(final JSplitPane argumentationGraphPane) {
+
+        this.graphPane = new JScrollPane();
+        this.theoryPane = new JScrollPane();
+
+        argumentationGraphPane.add(this.theoryPane);
+        argumentationGraphPane.add(this.graphPane);
+        argumentationGraphPane.setOneTouchExpandable(true);
+        argumentationGraphPane.setDividerLocation(150);
+
+//        //Provide minimum sizes for the two components in the split pane
+//        Dimension minimumSize = new Dimension(100, 50);
+//        listScrollPane.setMinimumSize(minimumSize);
+//        pictureScrollPane.setMinimumSize(minimumSize);
     }
 
-    @SuppressWarnings("rawtypes")
-    public void printGraph(SolveInfo info, Prolog engine) {
+    public void printArgumentationInfo(final SolveInfo info, final Prolog engine) {
 
         if (!(info.getQuery().toString().startsWith(BUILD_LABEL_SETS)
                 && info.isSuccess())) {
-            argumentationGraph.getViewport().removeAll();
+            this.graphPane.getViewport().removeAll();
+            this.theoryPane.getViewport().removeAll();
             return;
         }
 
-        final Layout<String, String> layout = new KKLayout<>(buildGraph(engine));
-        layout.setSize(new Dimension(500,500));
+        this.arguments = Argument.mineArguments(engine);
+        this.attacks = Attack.mineAttacks(engine, arguments);
+
+        printGraph();
+        printTheory();
+
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void printGraph() {
+
+        final Layout<String, String> layout = new KKLayout<>(buildGraph());
+        layout.setSize(new Dimension(350,300));
 
         final VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
-        vv.setPreferredSize(new Dimension(500,500));
+        vv.setPreferredSize(new Dimension(350,300));
         vv.getRenderContext().setVertexFillPaintTransformer(i -> {
-            if (Argument.labelFromIdentifier(i, this.vertices).equals("in")) return Color.GREEN;
-            if (Argument.labelFromIdentifier(i, this.vertices).equals("out")) return Color.RED;
+            if (Argument.labelFromIdentifier(i, this.arguments).equals("in")) return Color.GREEN;
+            if (Argument.labelFromIdentifier(i, this.arguments).equals("out")) return Color.RED;
             return Color.GRAY;
         });
         vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -61,17 +87,21 @@ public class ArgumentationGraphFrame {
         graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
         vv.setGraphMouse(graphMouse);
 
-        argumentationGraph.getViewport().setView(vv);
+        this.graphPane.getViewport().setView(vv);
     }
 
-    private Graph<String, String> buildGraph(Prolog engine) {
+    private void printTheory() {
+        final JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        this.arguments.forEach(x -> textArea.append(x.getDescriptor() + "\n"));
+        this.theoryPane.getViewport().setView(textArea);
+    }
 
-        this.vertices = Argument.mineArguments(engine);
-        this.attacks = Attack.mineAttacks(engine, vertices);
+    private Graph<String, String> buildGraph() {
 
         final Graph<String, String> graph = new SparseMultigraph<>();
 
-        this.vertices.stream()
+        this.arguments.stream()
             .map(Argument::getIdentifier)
             .forEach(graph::addVertex);
 
@@ -169,6 +199,14 @@ class Argument {
     public void addSubarg(final String subarg, final List<String> rules) {
         this.subargs.add(subarg);
         this.topRule.removeAll(rules);
+    }
+
+    public String getDescriptor() {
+        return this.getIdentifier() + " : " +
+                Stream.concat(this.getSubargs().stream(), this.topRule.stream())
+                        .reduce((a, b) -> a + "," + b)
+                        .orElse("") + " : " +
+                this.getConclusion();
     }
 
     static String identifierFromRules(final String rawRules, final List<Argument> vertices) {

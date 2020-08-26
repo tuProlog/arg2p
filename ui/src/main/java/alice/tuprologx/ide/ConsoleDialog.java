@@ -144,9 +144,9 @@ public class ConsoleDialog
 
         tp.addTab("exceptions", new JScrollPane(exception));
 
-        final JScrollPane argumentationGraph = new JScrollPane();
-        tp.addTab("graph", argumentationGraph);
-        argumentationGraphFrame = new ArgumentationGraphFrame(argumentationGraph);
+        final JSplitPane argumentationGraphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        tp.addTab("graph", argumentationGraphPane);
+        argumentationGraphFrame = new ArgumentationGraphFrame(argumentationGraphPane);
 
         /**/
 
@@ -381,7 +381,7 @@ public class ConsoleDialog
         }
         if (event.getSolveType() == 0)//if there is information about a solve operation
         {
-            argumentationGraphFrame.printGraph(event.getQueryResult(), (Prolog) event.getSource());
+            argumentationGraphFrame.printArgumentationInfo(event.getQueryResult(), (Prolog) event.getSource());
             showSolution(event.getQueryResult());
         }
     }
