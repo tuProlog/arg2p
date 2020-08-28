@@ -75,11 +75,11 @@ demonstration(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, OU
     subtract(UND, [A], NewUnd).
 
 /*
-    (a.ii) not BP(φ) and every argument B for neg(φ) is OUT*, and every A1,...An is IN*
+    (a.ii) not BP(neg(φ)) and every argument B for neg(φ) such that B(not <)A is OUT*, and every A1,...An is IN*
 */
 demonstration(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, TempIN, OUT_STAR, UND_STAR) :-
 	\+ isComplementInBurdenOfProof(A),
-	\+ findAllUndComplargument(A, UND, RESOLVING, _, _),
+	\+ findSupOrEqualUndComplargument(A, UND, RESOLVING, _, _),
 	allComplementInSet(A, OUT_STAR),
 	\+ findUndSubargument(A, UND, RESOLVING, _, _),
 	allSubArgumentInSet(A, IN_STAR),
@@ -110,11 +110,11 @@ demonstration(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, IN_STAR, T
     subtract(UND, [A], NewUnd).
 
 /*
-    (b.ii.1) not BP(φ) and an argument B for neg(φ) such that B(not <)A is IN*
+    (b.ii.1) not BP(φ) and an argument B for neg(φ) such A < B is IN*
 */
 demonstration(A, UND, IN_STAR, OUT_STAR, UND_STAR, RESOLVING, NewUnd, IN_STAR, TempOUT, UND_STAR) :-
 	\+ isArgumentInBurdenOfProof(A),
-	\+ findSupOrEqualUndComplargument(A, UND, RESOLVING, _, _),
+	\+ findSupUndComplargument(A, UND, RESOLVING, _, _),
 	oneInSuperiorOrEqualComplementFromSet(A, IN_STAR),
     writeDemonstration(['Adding argument: ', A, ' to OUT* (2.b.ii.1)']),
     append(OUT_STAR, [A], TempOUT),
