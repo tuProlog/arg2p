@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.1] - 2020-08-28
+### Changed
+- Argument list in graph visualisation tab
+### Fixed
+- BP labelling algorithm adapted to its latest definition (statements a.ii and b.ii.1)
+
 ## [0.3.0] - 2020-08-25
 ### Added
 - Argumentation graph visualisation on buildLabelSets/0 and buildLabelSets/2.
