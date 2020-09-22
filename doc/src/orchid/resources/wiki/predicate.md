@@ -4,7 +4,7 @@
 ## Flag
 Some flags can be set in the application. as fact of the Prolog theory.
 
-    partialHBP.
+    disableBPcompletion.
 
 
 to generate the BP labelling with no completeness requiremnet.
@@ -18,7 +18,7 @@ to write in the output tab all the step that led to a parcticular labelling (acc
 
 The engine can be queried via two API:
 
-    printLabelSets.
+    buildLabelSets.
 
 build and prints (in the output tab) the argument and the statement labellings according to the provided theory.
 

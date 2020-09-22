@@ -21,13 +21,3 @@ r5 : [] => -s('Pippo').
 sup(r2, r3).
 
 demonstration.
-
-test :-
-    convertAllRules,
-    buildLabelSets([In, Out, Und]),
-    write('\n==============================================> IN '),write('\n'),
-    writeList(In),write('\n'),
-    write('==============================================> OUT '),write('\n'),
-    writeList(Out),write('\n'),
-    write('==============================================> UND '),write('\n'),
-	writeList(Und),write('\n').

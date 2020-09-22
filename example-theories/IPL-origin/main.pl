@@ -1,4 +1,4 @@
-modulesPath('PATH_TO_MODULES_DIRECTOR/inter_private_law').
+modulesPath('PATH_TO_MODULES/IPL-origin').
 
 % Queries
 % call_module([ListaModuli], decision(Case, Court, Decision)).

@@ -3,7 +3,7 @@
 
 ### Download
 Download the test relase from [GitLab Repository](https://gitlab.com/pika-lab/argumentation/arg2p/-/releases), in particular:
-- arg2p-test-v.0.0.0.jar (main application)
+- arg2p-v.0.3.1.jar (main application)
 - example-theory.pl (example theory)
 
 
@@ -41,7 +41,7 @@ Download the test relase from [GitLab Repository](https://gitlab.com/pika-lab/ar
 </p>
 
 
-- Labellings are printed in the output tab (printLabelSets goal):
+- Labellings are printed in the output tab (buildLabelSets goal):
 <!--- ![Arg2P IDE Labelling][run4] --->
 
 <!--- [run4]: {{ 'assets/media/run4.png'|asset|scale(0.65)  }} --->

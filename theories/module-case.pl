@@ -1,2 +1,0 @@
-defendant('Steven').
-nationality('Italian').

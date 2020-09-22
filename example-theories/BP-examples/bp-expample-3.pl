@@ -32,13 +32,3 @@ bp(killed(X), intention(X), -selfDefence(X)).
 % partialHBP.
 
 demonstration.
-
-test :-
-    convertAllRules,
-    buildLabelSets([In, Out, Und]),
-    write('\n==============================================> IN '),write('\n'),
-    writeList(In),write('\n'),
-    write('==============================================> OUT '),write('\n'),
-    writeList(Out),write('\n'),
-    write('==============================================> UND '),write('\n'),
-	writeList(Und),write('\n').
