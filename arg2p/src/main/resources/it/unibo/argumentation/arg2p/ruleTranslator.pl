@@ -147,7 +147,7 @@ admissible([perm, [neg, Term]]) :- admissible_term(Term).
 admissible([Term]) :- admissible_term(Term).
 
 admissible_term(Term) :-
-    atom(Term),
+    atomic(Term),
     Term \== neg,
     Term \== obl,
     Term \== perm,
