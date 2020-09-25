@@ -86,10 +86,20 @@ check_modifiers_in_list([H|T], L) :- H \== [],
                             append([LH], LT, L).
 
 check_modifiers([], []).
-check_modifiers(H, List) :-	functor(H, '-', _) -> H =.. L, replace('-', 'neg', L, Lf), List = Lf;
-                            functor(H, 'o', _) -> (arg(1, H, Arg), check_modifiers(Arg, Lobl), List = ['obl'|[Lobl]]);
-                            functor(H, 'p', _) -> (arg(1, H, Arg), check_modifiers(Arg, Lper), List = ['perm'|[Lper]]);
-                            List = [H].
+check_modifiers(H, List) :-
+    functor(H, '-', _) -> (
+        H =.. L,
+        replace('-', 'neg', L, Lf),
+        List = Lf);
+    functor(H, 'o', _) -> (
+        arg(1, H, Arg),
+        check_modifiers(Arg, Lobl),
+        List = ['obl'|[Lobl]]);
+    functor(H, 'p', _) -> (
+        arg(1, H, Arg),
+        check_modifiers(Arg, Lper),
+        List = ['perm'|[Lper]]);
+    List = [H].
 
 /*
  *   Convert the given tuple to list
