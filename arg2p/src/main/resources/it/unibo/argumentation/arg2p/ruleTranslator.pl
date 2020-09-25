@@ -135,6 +135,7 @@ removehead([_|Tail], Tail).
 
 
 defeasible_admissible([unless, Term]) :- admissible(Term).
+defeasible_admissible(Term) :- admissible(Term).
 
 admissible([neg, Term]) :- admissible_term(Term).
 admissible([obl, [Term]]) :- admissible_term(Term).
