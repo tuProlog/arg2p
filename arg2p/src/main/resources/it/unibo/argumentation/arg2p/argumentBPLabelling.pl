@@ -255,17 +255,25 @@ allDirectsSubArguments(Argument, LIST) :-
     findall(Sub, support(Sub, Argument), LIST).
 
 allComplArguments(Argument, LIST) :-
-    complement(Argument, CA),
-    findall([A, B, CA], argument([A, B, CA]), LIST).
+    findall(X, (
+        complement(Argument, CA),
+        findall([A, B, CA], argument([A, B, CA]), X)
+    ), Y),
+    appendLists(Y, LIST).
 
 superiorComplArguments(Argument, LIST) :-
-    complement(Argument, CA),
-    findall([A, B, CA], (argument([A, B, CA]), superiorArgument([A, B, CA], Argument)), LIST).
+    findall(X, (
+        complement(Argument, CA),
+        findall([A, B, CA], (argument([A, B, CA]), superiorArgument([A, B, CA], Argument)), X)
+    ), Y),
+    appendLists(Y, LIST).
 
 superiorOrEqualComplArguments(Argument, LIST) :-
-    complement(Argument, CA),
-    findall([A, B, CA], (argument([A, B, CA]), \+ superiorArgument(Argument, [A, B, CA])), LIST).
-
+    findall(X, (
+        complement(Argument, CA),
+        findall([A, B, CA], (argument([A, B, CA]), \+ superiorArgument(Argument, [A, B, CA])), X)
+    ), Y),
+    appendLists(Y, LIST).
 
 noInWithEmptyCheck([], _).
 noInWithEmptyCheck(List, Target) :- noIn(List, Target).
@@ -355,7 +363,7 @@ isInBurdenOfProof(Concl) :-
 
 isComplementInBurdenOfProof(A) :-
     complement(A, Compl),
-    isInBurdenOfProof(Compl).
+    isInBurdenOfProof(Compl), !.
 
 isArgumentInBurdenOfProof([_, _, Concl]) :-
     isInBurdenOfProof(Concl).
