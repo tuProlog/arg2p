@@ -2,10 +2,11 @@
 
 ## [Unreleased]
 
-## [0.3.2] - 2020-09-24
+## [0.3.2] - 2020-10-13
 ### Fixed
 - Sort bug
 - Strong negation in answerQuery/4
+- Theory admissibility check
 
 
 ## [0.3.1] - 2020-08-28

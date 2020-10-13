@@ -20,7 +20,7 @@ variables:
   GOPTS: "--no-daemon --console=plain"
   ORG_GRADLE_PROJECT_orchidBaseUrl: "https://pika-lab.gitlab.io/argumentation/arg2p/"
   GCMD: gradle
-  VERSION: v0.3.1
+  VERSION: v0.3.2
 
 build:
   stage: build
