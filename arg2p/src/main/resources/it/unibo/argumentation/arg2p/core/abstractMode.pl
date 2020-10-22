@@ -14,7 +14,7 @@ buildArgumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]) :-
 
 buildArgumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]) :-
     argumentLabellingMode(grounded_defeasible_preferences),
-    argumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]).
+    argumentGroundedDefeasiblePreferencesLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]).
 
 buildArgumentLabelling([Arguments, Attacks, Supports], [BPIN, BPOUT, BPUND]) :-
     argumentLabellingMode(bp_grounded_partial_strict_preferences),

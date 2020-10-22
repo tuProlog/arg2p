@@ -22,7 +22,7 @@ public class TestArg2PLibraries {
 
     @Test
     public void libArgumentLabellingIsParsedCorrectly() {
-        Theory.parseWithStandardOperators(new ArgumentLabelling().getTheory());
+        Theory.parseWithStandardOperators(new GroundedStrictPreferencesLabelling().getTheory());
     }
 
     @Test
