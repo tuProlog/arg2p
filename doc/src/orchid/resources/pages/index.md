@@ -28,8 +28,8 @@ Quick links:
 
 In a nutshell, <span style="color: blue">arguments are produced from a set of defeasible rules</span>, and attack relationships between arguments are captured by argumentation graphs. The arguments of such graphs are labelled by following a labelling semantics. This simple framework will suffice to illustrate our upcoming investigation into persuasive burdens within an argumentation setting. 
 
-In addition, we use defeasible rule schemata to account for <span style="color: blue">deontic</span> reasoning, towards doctrine reification, as presented in [Riveret et al., 2019](https://www.researchgate.net/publication/335754554_A_Deontic_Argumentation_Framework_Towards_Doctrine_Reification).
+In addition, we use defeasible rule schemata to account for <span style="color: blue">deontic</span> reasoning, towards doctrine reification, as presented in _Riveret et al., 2019_.
 
-Moreover, the model has been extended following the <span style="color: blue">burden of proof</span> model presented in [Calegari and Sartor, 2020](https://www.overleaf.com/read/nqyzhycmjmst).
+Moreover, the model has been extended following the <span style="color: blue">burden of proof</span> model presented in _Calegari and Sartor, 2020_.
 
 More information about the format of the knowledge base and rules can be found on the [basic syntax]({{ site.baseUrl }}/wiki/syntax).
