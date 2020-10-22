@@ -32,8 +32,6 @@ oneAttackIN(Attacks, A, IN) :-
     member(B, IN), !.
 
 expandPreferenceSet([_, _, [sup(RuleOne, RuleTwo)]], Arguments, Attacks, NewAttacks) :-
-    write(RuleOne), nl,
-    write(RuleTwo), nl,
     findall(A, computeInvalidAttacks(RuleOne, RuleTwo, Arguments, Attacks, A), IA),
     appendLists(IA, InvalidAttacks),
     subtract(Attacks, InvalidAttacks, NewAttacks).
