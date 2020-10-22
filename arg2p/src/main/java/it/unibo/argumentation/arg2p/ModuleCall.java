@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class ModuleCall extends Arg2PLibrary {
     public ModuleCall() {
-        super("moduleCall");
+        super("modularity/moduleCall");
     }
 
     /**

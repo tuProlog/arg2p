@@ -4,12 +4,6 @@
 % Year: 2019
 % ---------------------------------------------------------------
 
-disableBPCompletion :-
-    asserta(disableBPcompletion).
-
-enableBPCompletion :-
-    retractall(disableBPcompletion).
-
 writeDemonstration([]) :-
     demonstration,
     write('\n').
@@ -19,12 +13,17 @@ writeDemonstration([X|T]) :-
     writeDemonstration(T).
 writeDemonstration(_).
 
-argumentBPLabelling([IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
+argumentBPLabelling(COMPLETION ,[IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
     reifyBurdenOfProofs(IN, OUT, UND),
     writeDemonstration(['=========================================>DEMONSTRATION']),
-    ((disableBPcompletion, partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND));
-    hbpComplete(go, IN, OUT, UND, BPIN, BPOUT, BPUND)),
+    argumentBPLabelling(COMPLETION, IN, OUT, UND, BPIN, BPOUT, BPUND),
     writeDemonstration(['=====================================>END DEMONSTRATION']).
+
+argumentBPLabelling(partial, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
+    partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND).
+
+argumentBPLabelling(complete, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
+    hbpComplete(go, IN, OUT, UND, BPIN, BPOUT, BPUND).
 
 %==============================================================================
 % COMPLETE HBP LABELLING

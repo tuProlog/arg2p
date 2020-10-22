@@ -40,5 +40,7 @@ public class Arg2PLibrary extends Library {
         engine.loadLibrary(ArgumentationEngineInterface.class.getName());
         engine.loadLibrary(RuleTranslator.class.getName());
         engine.loadLibrary(ModuleCall.class.getName());
+        engine.loadLibrary(AbstractMode.class.getName());
+        engine.loadLibrary(QueryMode.class.getName());
     }
 }
