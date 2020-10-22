@@ -24,13 +24,13 @@ in(A, (_ , Cs)) :- in(A, Cs).
  *  During the process, clean them from the unallowed symbols (-, o, p).
  */
 convertAllRules :-
-    retractall(rule(_)), !,
-    retractall(abstractBp(_)), !,
-    retractall(reifiedBp(_)), !,
+    retractall(rule(_)),
+    retractall(abstractBp(_)),
+    retractall(reifiedBp(_)),
     findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), StandardRules),
     findall([_, X], search('bp', 10, X), SpecialRules),
     append(StandardRules, SpecialRules, L),
-    convertAllRules(L).
+    convertAllRules(L), !.
 
 %=======================================================================================================================
 

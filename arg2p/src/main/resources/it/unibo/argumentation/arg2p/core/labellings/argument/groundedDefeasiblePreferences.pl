@@ -5,12 +5,12 @@
 % ---------------------------------------------------------------
 
 
-argumentLabelling([Arguments, _, _], [IN, OUT, UND]) :-
-    labelArguments(Arguments, [], [], IN, OUT, UND), !.
+argumentGroundedDefeasiblePreferencesLabelling([Arguments, _, _], [IN, OUT, UND]) :-
+    labelArgumentsGDP(Arguments, [], [], IN, OUT, UND), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-labelArguments(UND, IN, OUT, ResultIN, ResultOUT, ResultUND) :-
+labelArgumentsGDP(UND, IN, OUT, ResultIN, ResultOUT, ResultUND) :-
 
    findall(A, ( member(A, UND), allAttacksOUT(A, OUT) ), NewListIN),
    append(IN, NewListIN, NewIN),
@@ -21,9 +21,9 @@ labelArguments(UND, IN, OUT, ResultIN, ResultOUT, ResultUND) :-
    \+ isEmptyList(NewLabelledArguments),
 
    subtract(UND, NewLabelledArguments, UndPlus1),
-   labelArguments(UndPlus1, NewIN, NewOUT, ResultIN, ResultOUT, ResultUND).
+   labelArgumentsGDP(UndPlus1, NewIN, NewOUT, ResultIN, ResultOUT, ResultUND).
 
-labelArguments(UND, IN, OUT, IN, OUT, UND).
+labelArgumentsGDP(UND, IN, OUT, IN, OUT, UND).
 
 /*
     If an attack exists, it should come from an OUT argument

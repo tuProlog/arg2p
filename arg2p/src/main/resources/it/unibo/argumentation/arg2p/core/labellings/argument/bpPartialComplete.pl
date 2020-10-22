@@ -17,7 +17,7 @@ argumentBPLabelling(COMPLETION ,[IN, OUT, UND], [BPIN, BPOUT, BPUND]) :-
     reifyBurdenOfProofs(IN, OUT, UND),
     writeDemonstration(['=========================================>DEMONSTRATION']),
     argumentBPLabelling(COMPLETION, IN, OUT, UND, BPIN, BPOUT, BPUND),
-    writeDemonstration(['=====================================>END DEMONSTRATION']).
+    writeDemonstration(['=====================================>END DEMONSTRATION']), !.
 
 argumentBPLabelling(partial, IN, OUT, UND, BPIN, BPOUT, BPUND) :-
     partialHBPLabelling(UND, IN, OUT, [], BPIN, BPOUT, BPUND).

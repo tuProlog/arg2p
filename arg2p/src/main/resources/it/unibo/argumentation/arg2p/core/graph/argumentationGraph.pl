@@ -20,9 +20,9 @@
 %========================================================================
 %========================================================================
 buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
-        retractall(argument(_)), !,
-        retractall(attack(_, _)), !,
-	    retractall(support(_, _)), !,
+        retractall(argument(_)),
+        retractall(attack(_, _)),
+	    retractall(support(_, _)),
 	    buildArguments,
         buildAttacks,
         findall( [IDPremises,  TopRule,  RuleHead],
@@ -31,7 +31,7 @@ buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
                  Arguments),
         findall( (A1, A2), support(A1, A2), Supports),
 	    findall( (A1, A2), attack(A1, A2),  Attacks),
-        printArgumentationGraph.
+        printArgumentationGraph, !.
 
 %========================================================================
 % ARGUMENT DEFINITION
