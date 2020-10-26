@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.3.3] - 2020-10-26
+### Fixed
+- answerQuery/4 fix
+
 ## [0.3.2] - 2020-10-13
 ### Fixed
 - Sort bug
