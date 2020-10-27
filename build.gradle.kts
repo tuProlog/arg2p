@@ -1,5 +1,5 @@
 group = "it.unibo.alice.tuprolog.argumentation"
-version = "0.3.1"
+version = "0.3.3"
 
 plugins {
     java
