@@ -6,8 +6,7 @@
 
 
 argumentLabelling([Arguments, _, _], [IN, OUT, UND]) :-
-    labelArguments(Arguments, [], [], IN, OUT, UND),
-    printArgumentLabelling( [IN, OUT, UND] ).
+    labelArguments(Arguments, [], [], IN, OUT, UND), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

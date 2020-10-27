@@ -34,7 +34,8 @@ public class Arg2PLibrary extends Library {
         engine.loadLibrary(Utils.class.getName());
         engine.loadLibrary(Debug.class.getName());
         engine.loadLibrary(ArgumentationGraph.class.getName());
-        engine.loadLibrary(ArgumentLabelling.class.getName());
+        engine.loadLibrary(GroundedStrictPreferencesLabelling.class.getName());
+        engine.loadLibrary(GroundedDefeasiblePreferencesLabelling.class.getName());
         engine.loadLibrary(ArgumentBPLabelling.class.getName());
         engine.loadLibrary(StatementLabelling.class.getName());
         engine.loadLibrary(ArgumentationEngineInterface.class.getName());

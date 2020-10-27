@@ -54,8 +54,10 @@ public class ArgumentationGraphFrame {
 
         if (!(info.getQuery().toString().startsWith(BUILD_LABEL_SETS)
                 && info.isSuccess())) {
-            this.graphPane.getViewport().removeAll();
-            this.theoryPane.getViewport().removeAll();
+            if (!info.getQuery().toString().startsWith(BUILD_LABEL_SETS)) {
+                this.graphPane.getViewport().removeAll();
+                this.theoryPane.getViewport().removeAll();
+            }
             return;
         }
 

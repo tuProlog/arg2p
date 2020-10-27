@@ -1,6 +1,6 @@
 computeGlobalAcceptance([STATIN, STATOUT, STATUND], [ARGSIN, ARGSOUT, ARGSUND]) :-
     buildGraph([Arguments, Attacks, Supports]),
-    buildArgumentLabelling([Arguments, Attacks, Supports], [ARGSIN, ARGSOUT, ARGSUND]), !,
+    buildArgumentLabelling([Arguments, Attacks, Supports], [ARGSIN, ARGSOUT, ARGSUND]),
     buildStatementLabelling([ARGSIN, ARGSOUT, ARGSUND], [STATIN, STATOUT, STATUND]),
     storeResults(ARGSIN, ARGSOUT, ARGSUND).
 
@@ -11,6 +11,10 @@ buildGraph([Arguments, Attacks, Supports]) :-
 buildArgumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]) :-
     argumentLabellingMode(grounded_strict_preferences),
     argumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]).
+
+buildArgumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]) :-
+    argumentLabellingMode(grounded_defeasible_preferences),
+    argumentGroundedDefeasiblePreferencesLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]).
 
 buildArgumentLabelling([Arguments, Attacks, Supports], [BPIN, BPOUT, BPUND]) :-
     argumentLabellingMode(bp_grounded_partial_strict_preferences),
