@@ -20,6 +20,13 @@ labelArgumentsCSP(Arguments, Attacks, Supports, ResultIN, ResultOUT, ResultUND) 
 grounded(IN, OUT, UND, ResultIN, ResultOUT, ResultUND) :-
     labelArguments(UND, IN, OUT, ResultIN, ResultOUT, ResultUND), !.
 
+/*
+    If A attacks an IN argument, then A is OUT
+*/
+oneAttackIN(A, IN) :-
+    attack(A, B),
+    member(B, IN), !.
+
 findAcceptableSet([], _, _, []).
 findAcceptableSet([H|T], Attacks, Supports, [H|T2]) :-
     findAcceptableSet(T, Attacks, Supports, T2),
@@ -38,5 +45,5 @@ findAcceptableSet([_|T], Attacks, Supports, T2) :- findAcceptableSet(T, Attacks,
 %r3 : ~(a) => b.
 %
 %graphBuildMode(base).
-%argumentLabellingMode(credulous_strict_preferences).
+%argumentLabellingMode(complete_strict_preferences).
 %statementLabellingMode(base).
