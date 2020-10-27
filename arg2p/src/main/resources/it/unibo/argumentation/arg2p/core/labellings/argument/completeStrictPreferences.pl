@@ -7,7 +7,6 @@ labelArgumentsCSP(Arguments, Attacks, Supports, ResultIN, ResultOUT, ResultUND) 
     retractall(compl(_, _, _)),
     grounded([], [], Arguments, IN, OUT, UND),
     findAcceptableSet(UND, Attacks, Supports, AcceptableSet),
-    write(AcceptableSet),nl,
     append(IN, AcceptableSet, NewIN),
     subtract(UND, AcceptableSet, NewUND),
     grounded(NewIN, OUT, NewUND, ResultIN, ResultOUT, ResultUND),
@@ -43,6 +42,7 @@ findAcceptableSet([_|T], Attacks, Supports, T2) :- findAcceptableSet(T, Attacks,
 %r1 : [] => a.
 %r2 : [] => -a.
 %r3 : ~(a) => b.
+%r4 : [] => c.
 %
 %graphBuildMode(base).
 %argumentLabellingMode(complete_strict_preferences).
