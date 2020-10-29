@@ -42,14 +42,14 @@ to indicate permission and obligation respectively. These concepts, belonging to
 
     v_rule: o(-enter), enter => violation.
 
-Currently admitted forms for permission and negation:
+Currently admitted forms for permission and obligation:
 
-    o(Term)     _obligation_
-    o(-Term)    _prohibition_
-    -o(Term)    _no obligation_
-    -o(-Term)   _no prohibition_
-    p(Term)     _permission to do something_
-    p(-Term)    _permission to don't do something_
+    o(Term)     obligation
+    o(-Term)    prohibition
+    -o(Term)    no obligation
+    -o(-Term)   no prohibition
+    p(Term)     permission to do something
+    p(-Term)    permission to don't do something
 
 where _Term_ is a standard Prolog term.
 
