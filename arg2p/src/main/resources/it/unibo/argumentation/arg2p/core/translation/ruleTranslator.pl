@@ -9,6 +9,7 @@
 % rule([v, [ [obl, [neg, enter]], [enter] ], [violation] ]).
 % rule([rPerm, [ [emer] ], [perm, [enter]] ]).
 
+:- op(1199, xfx, ':>').
 :- op(1199, xfx, '=>').
 :- op(1001, xfx, ':').
 
@@ -27,10 +28,16 @@ convertAllRules :-
     retractall(rule(_)),
     retractall(abstractBp(_)),
     retractall(reifiedBp(_)),
-    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), StandardRules),
+    retractall(sup(_, _)),
+    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), DefeasibleRules),
+    strictRules(StrictRules),
     findall([_, X], search('bp', 10, X), SpecialRules),
-    append(StandardRules, SpecialRules, L),
+    appendLists([DefeasibleRules, StrictRules, SpecialRules], L),
     convertAllRules(L), !.
+
+strictRules(StandardRules) :-
+    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions :> Effect), StandardRules),
+    findall(_, (member([RN, _, _], StandardRules), assert(sup(RN, Y))), StandardRules).
 
 %=======================================================================================================================
 

@@ -193,16 +193,51 @@ rebuts(A, B) :-
         \+ superiorArgument(B, A).
 
 %------------------------------------------------------------------------
-% Superiority definition
-% A superiority relation over a set of rules Rules is an antireflexive and
-% antisymmetric binary relation over Rules
-%------------------------------------------------------------------------
-superiorArgument([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
-        sup(TopRuleA, TopRuleB).
-
-%------------------------------------------------------------------------
 % Undercutting definition: attacks on negation as failure premises
 %------------------------------------------------------------------------
 undercuts([_, _, RuleHeadA], [_, RuleB, _]) :-
         rule([RuleB, Body, _]),
         member([unless, RuleHeadA], Body).
+
+%------------------------------------------------------------------------
+% Superiority definition
+% A superiority relation over a set of rules Rules is an antireflexive and
+% antisymmetric binary relation over Rules
+%------------------------------------------------------------------------
+
+% LATEST LINK
+
+%superiorArgument([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
+%        sup(TopRuleA, TopRuleB).
+
+% WEAKEST LINK
+
+superiorArgument([RulesA, _, _], [RulesB, _, _ ]) :-
+	weakest(RulesA, WeakestA),
+	weakest(RulesB, WeakestB),
+	weaker(WeakestB, WeakestA).
+
+weakest(Rules, Weakest) :-
+	findall(sup(A, B), (member(A, Rules), member(B, Rules), sup(A, B), A \== B), Relations),
+	findWeakest(Rules, Relations, Weakest), !.
+
+findWeakest(Rules, _, Rules) :- allMaxPref(Rules).
+findWeakest(Rules, Relations, Weakest) :- mixedPreferences(Rules, Relations, Weakest). 
+
+mixedPreferences(Rules, [], Rules).
+mixedPreferences(Rules, [sup(A, _)|L], WeakestRules) :-
+	mixedPreferences(Rules, L, TW),
+	subtract(TW, [A], WeakestRules).
+
+allMaxPref([]).
+allMaxPref([H|T]) :- sup(H, X), var(X), allMaxPref(T).
+
+weaker([], _).
+weaker([H|T], RulesB) :-
+	weakerSingle(H, RulesB),
+	weaker(T, RulesB).
+
+weakerSingle(_, []).
+weakerSingle(X, [H|T]) :-
+	sup(H, X),
+	weakerSingle(X, T).

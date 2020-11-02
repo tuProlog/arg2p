@@ -273,7 +273,7 @@ class Argument {
                 theory.stream()
                     .map(y -> y.replaceAll("\\s+",""))
                     .filter(y -> y.startsWith(x.getTopRule() + ":"))
-                    .map(y -> y.split("=>")[1])
+                    .map(y -> y.split(y.contains("=>") ? "=>" : ":>")[1])
                     .findAny()
                     .orElseThrow(IllegalStateException::new)));
 
