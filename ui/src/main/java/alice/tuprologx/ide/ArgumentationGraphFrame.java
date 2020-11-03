@@ -138,7 +138,7 @@ class Attack {
     static List<Attack> mineAttacks(final Prolog engine, final List<Argument> arguments) {
         return engine.getTheory()
             .getClauses().stream()
-            .filter(x -> x.match(engine.termSolve("attack(X, Y)")))
+            .filter(x -> x.match(engine.termSolve("attack(_, X, Y)")))
             .map(x -> RegexHelpers.regexResults(x.toString()))
             .map(x -> new Attack(
                 Argument.identifierFromRules(x.get(0), arguments),

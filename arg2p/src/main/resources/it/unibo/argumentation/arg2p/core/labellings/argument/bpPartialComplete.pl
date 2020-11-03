@@ -330,7 +330,7 @@ completeIn(A, _, OUT) :- checkOutAttackers(A, OUT).
     If an attack exists, it should come from an OUT argument
 */
 checkOutAttackers(A, OUT) :-
-    \+ ( attack(B, A), \+ ( member(B, OUT)) ).
+    \+ ( attack(_, B, A), \+ ( member(B, OUT)) ).
 
 
 completeOut(A, IN, _) :- checkInAttacker(A, IN).
@@ -339,14 +339,14 @@ completeOut(A, IN, _) :- checkInAttecked(A, IN).
     Find an attack, if exists, from an IN argument, then ends
 */
 checkInAttacker(A, IN) :-
-    attack(B, A),
+    attack(_, B, A),
     member(B, IN), !.
 
 /*
     If A attacks an IN argument, then A is OUT
 */
 checkInAttecked(A, IN) :-
-    attack(A, B),
+    attack(_, A, B),
     member(B, IN), !.
 
 %==============================================================================

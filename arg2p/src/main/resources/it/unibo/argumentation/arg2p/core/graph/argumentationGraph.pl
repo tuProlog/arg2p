@@ -21,7 +21,7 @@
 %========================================================================
 buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
         retractall(argument(_)),
-        retractall(attack(_, _)),
+        retractall(attack(_, _, _)),
 	    retractall(support(_, _)),
 	    buildArguments,
         buildAttacks,
@@ -30,7 +30,7 @@ buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
                    ground(argument([IDPremises, TopRule, RuleHead])) ),
                  Arguments),
         findall( (A1, A2), support(A1, A2), Supports),
-	    findall( (A1, A2), attack(A1, A2),  Attacks),
+	    findall( (T, A1, A2), attack(T, A1, A2),  Attacks),
         printArgumentationGraph, !.
 
 %========================================================================
@@ -126,26 +126,26 @@ buildAttacks :-
     conflict(RuleHeadA, RuleHeadSubB),
     rebuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesSubB, RuleSubB, RuleHeadSubB]),
 
-	\+( attack([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
-	asserta( attack([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
+	\+( attack(rebut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
+	asserta( attack(rebut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
 	fail.
 
 buildAttacks :-
 	argument([IDPremisesA, RuleA, RuleHeadA]),
 	argument([IDPremisesB, RuleB, RuleHeadB]),
     undercuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]),
-	\+( attack([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
-	asserta( attack([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
+	\+( attack(undercut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
+	asserta( attack(undercut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
 	fail.
 
 /*
     Attacchi transitivi
 */
 buildAttacks :-
-	attack(A, B),
+	attack(T, A, B),
 	support(B, C),
-	\+ attack(A, C),
-	asserta( attack(A, C)),
+	\+ attack(T, A, C),
+	asserta(attack(T, A, C)),
     buildAttacks.
 
 buildAttacks.
