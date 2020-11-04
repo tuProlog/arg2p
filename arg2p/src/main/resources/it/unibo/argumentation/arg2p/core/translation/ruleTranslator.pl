@@ -35,9 +35,54 @@ convertAllRules :-
     appendLists([DefeasibleRules, StrictRules, SpecialRules], L),
     convertAllRules(L), !.
 
-strictRules(StandardRules) :-
-    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions :> Effect), StandardRules),
-    findall(_, (member([RN, _, _], StandardRules), assert(sup(RN, Y))), StandardRules).
+strictRules(CtrRules) :-
+    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions :> Effect), StrictRules),
+    transpose(StrictRules, StrictRules, CtrRules),
+    findall(_, (member([RN, _, _], CtrRules), assert(sup(RN, Y))), _).
+
+transpose([], CtrRules, CtrRules).
+transpose([H|T], TempCtrRules, CtrRules) :-
+    transpose(T, TempCtrRules, CR),
+    findall(TrH, transposition(H, TrH), Tran),
+    mergeCtrRules(CR, Tran, CtrRules).
+
+mergeCtrRules(All, ToMerge, X) :-
+    append(All, ToMerge, XT),
+    deduplicate(XT, X).
+
+deduplicate([], []).
+deduplicate([H|T], X) :- deduplicate(T, TT), (member(H, TT) -> X = T; X = [H|TT]). 
+
+transposition([Id, Prec, Effect], [Id, Prec, Effect]).
+transposition([Id, Prec, Effect], [NewId, NewPrec ,XNegated]) :-
+    compound(Prec),
+    tuple_to_list(Prec, LPrec),
+    member(X, LPrec),
+    subtract(LPrec, [X], CleanedPrec),
+    negate(X, XNegated),
+    negate(Effect, EffectNegated),
+    list_to_tuple([EffectNegated|CleanedPrec], NewPrec),
+    newIdentifier(X, LPrec, Id, NewId).
+transposition([Id, Prec, Effect], [NewId, EffectNegated ,XNegated]) :-
+    \+ compound(Prec),
+    Prec \== [],
+    negate(Prec, XNegated),
+    negate(Effect, EffectNegated),
+    atom_concat(Id, '_i', NewId).
+
+newIdentifier(Elem, List, OldId, NewId) :-
+    modifier(List, Elem, Mod),
+    atom_concat(OldId, Mod, NewId).
+
+modifier([Element|_], Element, '_i').
+modifier([_|Tail], Element, Index):-
+    modifier(Tail, Element, Index1),
+    atom_concat(Index1, 'i', Index).
+
+negate(X, Arg) :-
+    functor(X, '-', _) -> (
+        arg(1, X, Arg));
+    Arg = -(X).
 
 %=======================================================================================================================
 
@@ -127,6 +172,9 @@ check_modifiers(H, List) :-
  */
 tuple_to_list((A,B),L) :- tuple_to_list(A, La), tuple_to_list(B, Lb), append(La, Lb,L).
 tuple_to_list(A,[A]) :- nonvar(A), A \= (_ , _).
+
+list_to_tuple([H], (H)).
+list_to_tuple([H|T], (H,TT)) :- list_to_tuple(T,TT).
 
 /*
  *   Replace all the occurences of a given element with the given argument

@@ -190,14 +190,14 @@ sub(B, [B |Subs]) :-
 % (being preferred) attacks the other
 %------------------------------------------------------------------------
 rebuts(A, B) :-
-        \+ superiorArgument(B, A).
+	\+ superiorArgument(B, A).
 
 %------------------------------------------------------------------------
 % Undercutting definition: attacks on negation as failure premises
 %------------------------------------------------------------------------
 undercuts([_, _, RuleHeadA], [_, RuleB, _]) :-
-        rule([RuleB, Body, _]),
-        member([unless, RuleHeadA], Body).
+	rule([RuleB, Body, _]),
+	member([unless, RuleHeadA], Body).
 
 %------------------------------------------------------------------------
 % Superiority definition
@@ -207,8 +207,8 @@ undercuts([_, _, RuleHeadA], [_, RuleB, _]) :-
 
 % LATEST LINK
 
-%superiorArgument([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
-%        sup(TopRuleA, TopRuleB).
+% superiorArgument([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
+% 	sup(TopRuleA, TopRuleB).
 
 % WEAKEST LINK
 
@@ -240,4 +240,5 @@ weaker([H|T], RulesB) :-
 weakerSingle(_, []).
 weakerSingle(X, [H|T]) :-
 	sup(H, X),
+	\+ sup(X, H),
 	weakerSingle(X, T).
