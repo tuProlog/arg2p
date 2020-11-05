@@ -1,4 +1,14 @@
-Carminada 4
+r1 : [] :> a.
+r2 : a => b.
+r3 : b :> c.
+
+r4 : [] :> -c.
+
+graphBuildMode(base).
+statementLabellingMode(base).
+argumentLabellingMode(grounded).
+
+Caminada 4
 
 s1 : [] :> wr.
 s2 : [] :> go.
@@ -12,7 +22,7 @@ graphBuildMode(base).
 statementLabellingMode(base).
 argumentLabellingMode(grounded).
 
-Carminada 5
+Caminada 5
 
 s1 : [] :> a.
 s2 : [] :> d.
@@ -26,7 +36,7 @@ graphBuildMode(base).
 statementLabellingMode(base).
 argumentLabellingMode(grounded).
 
-Carminada 6
+Caminada 6
 
 s1 : [] :> a.
 s2 : [] :> d.
@@ -41,3 +51,30 @@ d4 : e => f.
 graphBuildMode(base).
 statementLabellingMode(base).
 argumentLabellingMode(grounded).
+
+Caminada 7
+
+s1 : [] :> a.
+s2 : [] :> b.
+s3 : [] :> c.
+s4 : [] :> g.
+s5 : d,e,f :> -g.
+
+d1 : a => d.
+d2 : b => e.
+d3 : c => f.
+
+graphBuildMode(base).
+statementLabellingMode(base).
+argumentLabellingMode(grounded).
+
+Complete test
+
+r1 : [] => a.
+r2 : [] => -a.
+r3 : ~(a) => b.
+r4 : [] => c.
+
+graphBuildMode(base).
+argumentLabellingMode(complete).
+statementLabellingMode(base).

@@ -138,9 +138,6 @@ buildAttacks :-
 	asserta( attack(undercut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
 	fail.
 
-/*
-    Attacchi transitivi
-*/
 buildAttacks :-
 	attack(T, A, B),
 	support(B, C),
@@ -181,7 +178,7 @@ conflict( [obl, [Atom]],  [perm, [neg, Atom]]).
 % • DirectSub(A) = {A1,...An}
 %------------------------------------------------------------------------
 sub(B, [B |Subs]) :-
-       findall(Sub,  support(Sub, B), Subs ).
+	findall(Sub,  support(Sub, B), Subs ).
 
 %------------------------------------------------------------------------
 % Rebutting definition: clash of incompatible conclusions
@@ -190,6 +187,7 @@ sub(B, [B |Subs]) :-
 % (being preferred) attacks the other
 %------------------------------------------------------------------------
 rebuts(A, B) :-
+	restrict(A, B),
 	\+ superiorArgument(B, A).
 
 %------------------------------------------------------------------------
@@ -198,6 +196,13 @@ rebuts(A, B) :-
 undercuts([_, _, RuleHeadA], [_, RuleB, _]) :-
 	rule([RuleB, Body, _]),
 	member([unless, RuleHeadA], Body).
+
+%------------------------------------------------------------------------
+% Rebut restriction. If the attacked argument has a strict rule as 
+% the TopRule also the attacker must
+%------------------------------------------------------------------------
+restrict([_, TopRuleA, _], [_, TopRuleB, _ ]) :- 
+	\+ (strict(TopRuleB), \+ strict(TopRuleA)).
 
 %------------------------------------------------------------------------
 % Superiority definition

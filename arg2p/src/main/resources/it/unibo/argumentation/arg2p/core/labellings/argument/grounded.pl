@@ -40,6 +40,7 @@ oneAttackIN(Attacks, A, IN) :-
     If the argument conclusion is a sup indication compute the new attack set
 */
 expandPreferenceSet([_, _, [sup(RuleOne, RuleTwo)]], Arguments, Attacks, NewAttacks) :-
+    assert(temp_sup(RuleOne, RuleTwo)),
     assert(sup(RuleOne, RuleTwo)),
     findall(A, computeInvalidAttack(RuleOne, RuleTwo, Arguments, Attacks, A), InvalidAttacks),
     subtract(Attacks, InvalidAttacks, NewAttacks).
@@ -67,3 +68,7 @@ subset([H|T], List) :- member(H, List), subset(T,List).
     Defeasible preference addition
 */
 conflict([sup(X, Y)],  [sup(Y, X)]).
+
+cleanTempSup :-
+    findall(_,(temp_sup(X, Y), retract(sup(X, Y))), _),
+    retractall(temp_sup(_, _)).
