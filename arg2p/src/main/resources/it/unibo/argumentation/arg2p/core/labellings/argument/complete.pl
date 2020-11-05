@@ -1,4 +1,5 @@
 argumentCompleteLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]) :-
+    retractall(compl(_,_,_)),
     grounded(Arguments, Attacks, [], [], Arguments, RAttacks, RIN, ROUT, RUND),
     completeLabellingT(Arguments, RAttacks, RIN, ROUT, RUND, _, IN, OUT, UND),
     cleanTempSup.

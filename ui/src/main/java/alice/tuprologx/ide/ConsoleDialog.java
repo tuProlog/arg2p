@@ -381,7 +381,7 @@ public class ConsoleDialog
         }
         if (event.getSolveType() == 0)//if there is information about a solve operation
         {
-            //argumentationGraphFrame.printArgumentationInfo(event.getQueryResult(), (Prolog) event.getSource());
+            argumentationGraphFrame.printArgumentationInfo(event.getQueryResult(), (Prolog) event.getSource());
             showSolution(event.getQueryResult());
         }
     }
