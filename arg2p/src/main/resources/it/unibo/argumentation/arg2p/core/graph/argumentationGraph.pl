@@ -65,8 +65,9 @@ buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
 buildArguments :-
 	rule([RuleID, RuleBody, RuleHead]),
 	ruleBodyIsSupported(RuleBody, [], [], PremisesOfSupportingArguments, Supports),
+	\+ member(RuleID, PremisesOfSupportingArguments),
 	append([RuleID], PremisesOfSupportingArguments, IDPremises),
-	sort(IDPremises, SortedPremises), % Also remove duplicates
+	sort(IDPremises, SortedPremises),
     NewArgument = [SortedPremises, RuleID, RuleHead],
 	\+ argument(NewArgument),
 	assertSupports(Supports, NewArgument),
@@ -83,6 +84,9 @@ buildArguments.
 %========================================================================
 ruleBodyIsSupported([], ResultPremises, ResultSupports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ [unless, _] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
+	ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
+ruleBodyIsSupported([ [prolog(Check)] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
+	call(Check),
 	ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ Statement | Others], Premises, Supports, ResultPremises, ResultSupports) :-
     argument([ArgumentID, RuleID, Statement]),

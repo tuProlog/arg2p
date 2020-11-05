@@ -52,33 +52,40 @@ mergeCtrRules(All, ToMerge, X) :-
     deduplicate(XT, X).
 
 deduplicate([], []).
-deduplicate([H|T], X) :- deduplicate(T, TT), (member(H, TT) -> X = T; X = [H|TT]). 
+deduplicate([[RN,A,B]|T], X) :- deduplicate(T, TT), (member([RN,_,_], TT) -> X = TT; X = [[RN,A,B]|TT]). 
 
 transposition([Id, Prec, Effect], [Id, Prec, Effect]).
 transposition([Id, Prec, Effect], [NewId, NewPrec ,XNegated]) :-
     compound(Prec),
-    tuple_to_list(Prec, LPrec),
-    member(X, LPrec),
-    subtract(LPrec, [X], CleanedPrec),
-    negate(X, XNegated),
-    negate(Effect, EffectNegated),
-    list_to_tuple([EffectNegated|CleanedPrec], NewPrec),
-    newIdentifier(X, LPrec, Id, NewId).
+    tuple_to_list(Prec, LPrec),!,
+    transposition_sequential(LPrec, LPrec, Effect, Id, [], NewPrec, XNegated, NewId).
 transposition([Id, Prec, Effect], [NewId, EffectNegated ,XNegated]) :-
     \+ compound(Prec),
     Prec \== [],
+    prologEscape(X),
     negate(Prec, XNegated),
     negate(Effect, EffectNegated),
     atom_concat(Id, '_i', NewId).
 
-newIdentifier(Elem, List, OldId, NewId) :-
-    modifier(List, Elem, Mod),
+transposition_sequential(LPrec, [H|T], Effect, Id, Skipped, NewPrec, XNegated, NewId) :-
+    transposition_sequential(LPrec, T, Effect, Id, [H|Skipped], NewPrec, XNegated, NewId).
+transposition_sequential(LPrec, [X|T], Effect, Id, Skipped, NewPrec, XNegated, NewId) :-
+    prologEscape(X),
+    append(Skipped, T, CleanedPrec),
+    negate(X, XNegated),
+    negate(Effect, EffectNegated),
+    list_to_tuple([EffectNegated|CleanedPrec], NewPrec),
+    newIdentifier(Skipped, Id, NewId).
+
+newIdentifier(List, OldId, NewId) :-
+    modifier(List, Mod),
     atom_concat(OldId, Mod, NewId).
 
-modifier([Element|_], Element, '_i').
-modifier([_|Tail], Element, Index):-
-    modifier(Tail, Element, Index1),
+modifier([], '_i').
+modifier([_|Tail], Index):-
+    modifier(Tail, Index1),
     atom_concat(Index1, 'i', Index).
+
 
 negate(X, Arg) :-
     functor(X, '-', _) -> (
@@ -91,6 +98,9 @@ negate(X, Arg) :-
         );
         Arg = o(-(PX))));
     Arg = -(X).
+
+
+prologEscape(X) :- \+ functor(X, 'prolog', _).
 
 %=======================================================================================================================
 
