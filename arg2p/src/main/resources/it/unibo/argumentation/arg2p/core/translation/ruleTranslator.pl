@@ -62,7 +62,7 @@ transposition([Id, Prec, Effect], [NewId, NewPrec ,XNegated]) :-
 transposition([Id, Prec, Effect], [NewId, EffectNegated ,XNegated]) :-
     \+ compound(Prec),
     Prec \== [],
-    prologEscape(X),
+    prologEscape(Prec),
     negate(Prec, XNegated),
     negate(Effect, EffectNegated),
     atom_concat(Id, '_i', NewId).

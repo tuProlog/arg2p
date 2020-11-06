@@ -86,7 +86,7 @@ ruleBodyIsSupported([], ResultPremises, ResultSupports, ResultPremises, ResultSu
 ruleBodyIsSupported([ [unless, _] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
 	ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ [prolog(Check)] | Others], Premises, Supports, ResultPremises, ResultSupports) :-
-	call(Check),
+	(callable(Check) -> call(Check); Check),
 	ruleBodyIsSupported(Others, Premises, Supports, ResultPremises, ResultSupports).
 ruleBodyIsSupported([ Statement | Others], Premises, Supports, ResultPremises, ResultSupports) :-
     argument([ArgumentID, RuleID, Statement]),

@@ -13,6 +13,6 @@ graphBuildMode(base).
 statementLabellingMode(base).
 argumentLabellingMode(grounded).
 
-t2: sup(Y, X), -sup(Z, X) :> -sup(Z, Y). // USELESS
-t3: sup(Z, Y), -sup(Z, X) :> -sup(Y, X). // USELESS
-t4: sup(Y, X) :> -sup(X, Y) // USELESS
+%t2: sup(Y, X), -sup(Z, X) :> -sup(Z, Y). // USELESS
+%t3: sup(Z, Y), -sup(Z, X) :> -sup(Y, X). // USELESS
+%t4: sup(Y, X) :> -sup(X, Y) // USELESS

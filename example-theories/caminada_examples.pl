@@ -16,7 +16,7 @@ s3 : b :> -hw.
 s4 : m :> hw.
 
 d1 : wr => m.
-d1 : go => b.
+d2 : go => b.
 
 graphBuildMode(base).
 statementLabellingMode(base).
@@ -30,7 +30,7 @@ s3 : [] :> c.
 s4 : b,e :> -c.
 
 d1 : a => b.
-d1 : d => e.
+d2 : d => e.
 
 graphBuildMode(base).
 statementLabellingMode(base).
