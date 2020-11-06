@@ -155,8 +155,8 @@ class Argument {
     private final List<String> topRule;
     private final List<String> subargs;
 
-    private String identifier;
-    private String conclusion;
+    private String identifier = "";
+    private String conclusion = "";
 
     public Argument(final String label, final String rules) {
         this.label = label;
@@ -268,14 +268,14 @@ class Argument {
         final List<String> theory = Arrays.asList(
                 engine.getTheory().getText().split("\\n"));
 
-        verts.forEach(x ->
-            x.setConclusion(
-                theory.stream()
-                    .map(y -> y.replaceAll("\\s+",""))
-                    .filter(y -> y.startsWith(x.getTopRule() + ":"))
-                    .map(y -> y.split(y.contains("=>") ? "=>" : ":>")[1])
-                    .findAny()
-                    .orElseThrow(IllegalStateException::new)));
+        // verts.forEach(x ->
+        //     x.setConclusion(
+        //         theory.stream()
+        //             .map(y -> y.replaceAll("\\s+",""))
+        //             .filter(y -> y.startsWith("rule([" + x.getTopRule() + ","))
+        //             .map(y -> y.split(y.contains("=>") ? "=>" : ":>")[1])
+        //             .findAny()
+        //             .orElseThrow(IllegalStateException::new)));
 
         return verts;
     }
