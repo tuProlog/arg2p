@@ -28,7 +28,6 @@ convertAllRules :-
     retractall(rule(_)),
     retractall(abstractBp(_)),
     retractall(reifiedBp(_)),
-    retractall(sup(_, _)),
     retractall(strict(_)),
     findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), DefeasibleRules),
     strictRules(StrictRules),
@@ -39,7 +38,7 @@ convertAllRules :-
 strictRules(CtrRules) :-
     findall([RuleName, Preconditions, Effect], (RuleName : Preconditions :> Effect), StrictRules),
     transpose(StrictRules, StrictRules, CtrRules),
-    findall(_, (member([RN, _, _], CtrRules), assert(sup(RN, Y)), assert(strict(RN))), _).
+    findall(_, (member([RN, _, _], CtrRules), assert(strict(RN))), _).
 
 transpose([], CtrRules, CtrRules).
 transpose([H|T], TempCtrRules, CtrRules) :-

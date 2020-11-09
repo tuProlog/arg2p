@@ -94,7 +94,6 @@ ruleBodyIsSupported([ Statement | Others], Premises, Supports, ResultPremises, R
 	append([[ArgumentID, RuleID, Statement]], Supports, NewSupports),
 	ruleBodyIsSupported(Others, NewPremises, NewSupports, ResultPremises, ResultSupports).
 
-
 assertSupports([], _).
 assertSupports([Support | OtherSupports], Argument) :-
 	asserta(support(Support, Argument)),
@@ -103,43 +102,29 @@ assertSupports([Support | OtherSupports], Argument) :-
 %========================================================================
 % ATTACK DEFINITION
 %========================================================================
-%Definition: An attack relation;over a set of arguments A is a binary relation over A ,
-%i.e. ; A A . An argument B attacks an argument A, i.e. B;A, iff B rebuts or undercuts
-%A, where
-%• B rebuts A (on A0) iff exists A0 in Sub(A) such that conc(B) and conc(A0) are in conflict, i.e.
-%Conflicts(conc(B);conc(A0)), and A0 not superior B;
-%• B undercuts A (on A0) iff exists A0 in Sub(A) such that  conc(B) belongs to the body of
-%TopRule(A0), i.e. ( conc(B)) in Body(TopRule(A0)).
-%========================================================================
-
-% controllo sempre in cascata
-
-% -- REBUTS --
-% prendo due argomenti A e B
-% di B ottengo il supporto
-% controllo che la conclusione dei membri del supporto non sia in conflitto con la conclusione di A
-% se lo è controllo se B è superiore ad A
-% in caso affermativo, se già non l'ho inserito, aggiungo l'attacco alla teoria
 
 buildAttacks :-
-	argument([IDPremisesA, RuleA, RuleHeadA]),
-	argument([IDPremisesB, RuleB, RuleHeadB]),
-    sub([IDPremisesB, RuleB, RuleHeadB], Subs),
-    member([IDPremisesSubB, RuleSubB, RuleHeadSubB], Subs),
-
-    conflict(RuleHeadA, RuleHeadSubB),
-    rebuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesSubB, RuleSubB, RuleHeadSubB]),
-
-	\+( attack(rebut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
-	asserta( attack(rebut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
+	argument(A),
+	argument(B),
+    rebuts(A, B),
+	\+(attack(rebut, A, B)),
+	asserta(attack(rebut, A, B)),
 	fail.
 
 buildAttacks :-
-	argument([IDPremisesA, RuleA, RuleHeadA]),
-	argument([IDPremisesB, RuleB, RuleHeadB]),
-    undercuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]),
-	\+( attack(undercut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
-	asserta( attack(undercut, [IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) ),
+	argument(A),
+	argument(B),
+    contraryRebuts(A, B),
+	\+(attack(contrary_rebut, A, B)),
+	asserta(attack(contrary_rebut, A, B)),
+	fail.
+
+buildAttacks :-
+	argument(A),
+	argument(B),
+    undercuts(A, B),
+	\+(attack(undercut, A, B)),
+	asserta(attack(undercut, A, B)),
 	fail.
 
 buildAttacks :-
@@ -190,16 +175,27 @@ sub(B, [B |Subs]) :-
 % rebutting arguments mutually attack each other or only one of them
 % (being preferred) attacks the other
 %------------------------------------------------------------------------
-rebuts(A, B) :-
-	restrict(A, B),
-	\+ superiorArgument(B, A).
+rebuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) :-
+	conflict(RuleHeadA, RuleHeadB),
+	restrict([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]),
+	\+ superiorArgument([IDPremisesB, RuleB, RuleHeadB], [IDPremisesA, RuleA, RuleHeadA]).
 
 %------------------------------------------------------------------------
-% Undercutting definition: attacks on negation as failure premises
+% Contrary Rebutting definition: clash of a conclusion with a failure as premise assumption
+% we assume a preference relation over arguments determining whether two
+% rebutting arguments mutually attack each other or only one of them
+% (being preferred) attacks the other
 %------------------------------------------------------------------------
-undercuts([_, _, RuleHeadA], [_, RuleB, _]) :-
+contraryRebuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) :-
+	restrict([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]),
 	rule([RuleB, Body, _]),
 	member([unless, RuleHeadA], Body).
+
+%------------------------------------------------------------------------
+% Undercutting definition: attacks on defeasible inference rule
+%------------------------------------------------------------------------
+undercuts([_, _, [challenge(RuleB)]], [_, RuleB, _]) :-
+	\+ strict(RuleB).
 
 %------------------------------------------------------------------------
 % Rebut restriction. If the attacked argument has a strict rule as 
@@ -210,44 +206,58 @@ restrict([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
 
 %------------------------------------------------------------------------
 % Superiority definition
-% A superiority relation over a set of rules Rules is an antireflexive and
+% A superiority relation over a set of rules Rules is an antireflexive and
 % antisymmetric binary relation over Rules
 %------------------------------------------------------------------------
 
-% LATEST LINK
+superiorArgument([RulesA, TopRuleA, ConcA], [RulesB, TopRuleB, ConcB]) :-
+	influentRules(RulesA, TopRuleA, ConcA, InfluentA),
+	influentRules(RulesB, TopRuleB, ConcB, InfluentB),
+	weaker(InfluentB, InfluentA).
 
-% superiorArgument([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
-% 	sup(TopRuleA, TopRuleB).
+influentRules(Rules, _, _, InfluentRules) :-
+	orderingPrinciple(weakest),
+	weakestRule(Rules, InfluentRules).
 
-% WEAKEST LINK
+influentRules(Rules, TopRule, Conc, InfluentRules) :-
+	orderingPrinciple(last),
+	lastRule(Rules, TopRule, Conc, InfluentRules).
 
-superiorArgument([RulesA, _, _], [RulesB, _, _ ]) :-
-	weakest(RulesA, WeakestA),
-	weakest(RulesB, WeakestB),
-	weaker(WeakestB, WeakestA).
+weakestRule(Rules, Influent) :-
+	findall(X, (member(X, Rules), \+ strict(X)), Influent).
 
-weakest(Rules, Weakest) :-
-	findall(sup(A, B), (member(A, Rules), member(B, Rules), sup(A, B), A \== B), Relations),
-	findWeakest(Rules, Relations, Weakest), !.
+lastRule(Rules, TopRule, Conc, [TopRule]) :- \+ strict(TopRule).
+lastRule(Rules, TopRule, Conc, Influent) :- 
+	strict(TopRule),
+	findall(X, (support([R, TR, C], [Rules, TopRule, Conc]), lastRule(R, TR, C, X)), Res),
+	flatten(Res, Influent).
 
-findWeakest(Rules, _, Rules) :- allMaxPref(Rules).
-findWeakest(Rules, Relations, Weakest) :- mixedPreferences(Rules, Relations, Weakest). 
+weaker(RulesA, []) :-
+	RulesA \== [].
 
-mixedPreferences(Rules, [], Rules).
-mixedPreferences(Rules, [sup(A, _)|L], WeakestRules) :-
-	mixedPreferences(Rules, L, TW),
-	subtract(TW, [A], WeakestRules).
+weaker(RulesA, RulesB) :-
+	RulesA \== [],
+	RulesB \== [],
+	orderingComparator(elitist),
+	member(Rule, RulesA),
+	allStronger(Rule, RulesB), !.
 
-allMaxPref([]).
-allMaxPref([H|T]) :- sup(H, X), var(X), allMaxPref(T).
+weaker(RulesA, RulesB) :-
+	RulesA \== [],
+	RulesB \== [],
+	orderingComparator(democrat),
+	weakerDemo(RulesA, RulesB).
 
-weaker([], _).
-weaker([H|T], RulesB) :-
-	weakerSingle(H, RulesB),
-	weaker(T, RulesB).
+weakerDemo([], _).
+weakerDemo([H|T], Rules) :-
+	singleStronger(H, Rules),
+	weakerDemo(T, Rules).
 
-weakerSingle(_, []).
-weakerSingle(X, [H|T]) :-
-	sup(H, X),
-	\+ sup(X, H),
-	weakerSingle(X, T).
+allStronger(_, []).
+allStronger(Target, [Rule|Rules]) :-
+	sup(Rule, Target),
+	allStronger(Target, Rules).
+
+singleStronger(Target, Rules) :-
+	member(Rule, Rules),
+	sup(Rule, Target), !.
