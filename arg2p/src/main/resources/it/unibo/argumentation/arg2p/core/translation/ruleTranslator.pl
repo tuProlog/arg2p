@@ -9,6 +9,9 @@
 % rule([v, [ [obl, [neg, enter]], [enter] ], [violation] ]).
 % rule([rPerm, [ [emer] ], [perm, [enter]] ]).
 
+:- op(1199, xfx, '-->').
+:- op(1199, xfx, '~~>').
+
 :- op(1199, xfx, ':>').
 :- op(1199, xfx, '=>').
 :- op(1001, xfx, ':').
@@ -26,19 +29,39 @@ in(A, (_ , Cs)) :- in(A, Cs).
  */
 convertAllRules :-
     retractall(rule(_)),
+    retractall(premise(_)),
     retractall(abstractBp(_)),
     retractall(reifiedBp(_)),
     retractall(strict(_)),
-    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), DefeasibleRules),
+    defeasibleRules(DefeasibleRules),
     strictRules(StrictRules),
-    findall([_, X], search('bp', 10, X), SpecialRules),
-    appendLists([DefeasibleRules, StrictRules, SpecialRules], L),
+    ordinaryPremises(Premises),
+    axiomPremises(Axioms),
+    specialRules(SpecialRules),
+    appendLists([DefeasibleRules, StrictRules, Premises, Axioms, SpecialRules], L),
     convertAllRules(L), !.
+
+defeasibleRules(DefeasibleRules) :-
+    findall([RuleName, Preconditions, Effect], (RuleName : Preconditions => Effect), DefeasibleRules).
 
 strictRules(CtrRules) :-
     findall([RuleName, Preconditions, Effect], (RuleName : Preconditions :> Effect), StrictRules),
     transpose(StrictRules, StrictRules, CtrRules),
     findall(_, (member([RN, _, _], CtrRules), assert(strict(RN))), _).
+
+ordinaryPremises(Premises) :-
+    findall([RuleName, Effect], (RuleName ~~> Effect), Premises).
+
+axiomPremises(Axioms) :-
+    findall([RuleName, Effect], (RuleName --> Effect), Axioms),
+    findall(_, (member([RN, _], Axioms), assert(strict(RN))), _).
+
+specialRules(SpecialRules) :-
+    findall([_, X], search('bp', 10, X), SpecialRules).
+
+%=======================================================================================================================
+% TRANSPOSITION
+%=======================================================================================================================
 
 transpose([], CtrRules, CtrRules).
 transpose([H|T], TempCtrRules, CtrRules) :-
@@ -85,7 +108,6 @@ modifier([_|Tail], Index):-
     modifier(Tail, Index1),
     atom_concat(Index1, 'i', Index).
 
-
 negate(X, Arg) :-
     functor(X, '-', _) -> (
         arg(1, X, Arg));
@@ -119,13 +141,13 @@ convertAllRules([[H,E]|T]) :- convertRule(H, E), convertAllRules(T).
  *   rule([r2,[[followedGuidelines(X_e4149)],[doctor(X_e4149)]],[neg,liable(X_e4149)]]).
  */
 convertRule(RuleName, Preconditions, Effects) :-
-                            tuple_to_list(Preconditions, Lprecond),
-                            tuple_to_list(Effects, Leffects),
-                            check_modifiers_in_list(preconditions, Lprecond, LprecondChecked),
-                            check_modifiers_in_list(effects, Leffects, LeffectsChecked),
-                            flatten_first_level(LeffectsChecked, LeffectsCheckedFlattened),
-                            List = [RuleName, LprecondChecked, LeffectsCheckedFlattened],
-                            assert(rule(List)).
+    tuple_to_list(Preconditions, Lprecond),
+    tuple_to_list(Effects, Leffects),
+    check_modifiers_in_list(preconditions, Lprecond, LprecondChecked),
+    check_modifiers_in_list(effects, Leffects, LeffectsChecked),
+    flatten_first_level(LeffectsChecked, LeffectsCheckedFlattened),
+    List = [RuleName, LprecondChecked, LeffectsCheckedFlattened],
+    assert(rule(List)).
 
 /*
  *   Convert the given special rule
@@ -134,12 +156,18 @@ convertRule(RuleName, Preconditions, Effects) :-
  *   abastractBp([[neg, liable(X_e4149)]]).
  */
 convertRule(_, Effects) :-
-            functor(Effects, 'bp', _) ->
-                Effects =.. L,
-                removehead(L, LC),
-                check_modifiers_in_list(effects, LC, Checked),
-                assert(abstractBp(Checked));
-            true.
+    functor(Effects, 'bp', _),
+    Effects =.. L,
+    removehead(L, LC),
+    check_modifiers_in_list(effects, LC, Checked),
+    assert(abstractBp(Checked)).
+
+convertRule(Name, Effects) :-
+    \+ functor(Effects, 'bp', _),
+    tuple_to_list(Effects, Leffects),
+    check_modifiers_in_list(effects, Leffects, LeffectsChecked),
+    flatten_first_level(LeffectsChecked, LeffectsCheckedFlattened),
+    assert(premise([Name, LeffectsCheckedFlattened])).
 
 %=======================================================================================================================
 

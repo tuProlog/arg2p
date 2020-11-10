@@ -63,6 +63,13 @@ buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
 % Se l'argomento è nuovo lo aggiungo alla teoria
 
 buildArguments :-
+	premise([PremiseID, Premise]),
+	NewArgument = [[PremiseID], none, Premise],
+	\+ argument(NewArgument),
+	asserta(argument(NewArgument)),
+	asserta(prem([PremiseID, Premise], NewArgument)),
+    fail.
+buildArguments :-
 	rule([RuleID, RuleBody, RuleHead]),
 	ruleBodyIsSupported(RuleBody, [], [], PremisesOfSupportingArguments, Supports),
 	\+ member(RuleID, PremisesOfSupportingArguments),
@@ -71,6 +78,7 @@ buildArguments :-
     NewArgument = [SortedPremises, RuleID, RuleHead],
 	\+ argument(NewArgument),
 	assertSupports(Supports, NewArgument),
+	liftPremises(Supports, NewArgument),
 	asserta(argument(NewArgument)),
     buildArguments.
 
@@ -99,6 +107,9 @@ assertSupports([Support | OtherSupports], Argument) :-
 	asserta(support(Support, Argument)),
 	assertSupports(OtherSupports, Argument).
 
+liftPremises(Supports, Argument) :-
+	findall(_, (member(S, Supports), prem(Prem, S), asserta(prem(Prem, Argument))), _).
+
 %========================================================================
 % ATTACK DEFINITION
 %========================================================================
@@ -106,35 +117,32 @@ assertSupports([Support | OtherSupports], Argument) :-
 buildAttacks :-
 	argument(A),
 	argument(B),
-    rebuts(A, B),
-	\+(attack(rebut, A, B)),
-	asserta(attack(rebut, A, B)),
-	fail.
-
-buildAttacks :-
-	argument(A),
-	argument(B),
-    contraryRebuts(A, B),
-	\+(attack(contrary_rebut, A, B)),
-	asserta(attack(contrary_rebut, A, B)),
-	fail.
-
-buildAttacks :-
-	argument(A),
-	argument(B),
-    undercuts(A, B),
-	\+(attack(undercut, A, B)),
-	asserta(attack(undercut, A, B)),
+    attacks(T, A, B),
+	\+(attack(T, A, B)),
+	asserta(attack(T, A, B)),
 	fail.
 
 buildAttacks :-
 	attack(T, A, B),
 	support(B, C),
+	acceptableTransitivity(T, A, C),
 	\+ attack(T, A, C),
 	asserta(attack(T, A, C)),
     buildAttacks.
 
 buildAttacks.
+
+attacks(rebut, A, B) :- rebuts(A, B).
+attacks(contrary_rebut, A, B) :- contraryRebuts(A, B).
+attacks(undermine, A, B) :- undermines(A, B).
+attacks(contrary_undermine, A, B) :- contraryUndermines(A, B).
+attacks(undercut, A, B) :- undercuts(A, B).
+
+acceptableTransitivity(rebut, A, B) :- restrict(A, B), \+ superiorArgument(B, A).
+acceptableTransitivity(contrary_rebut, A, B) :- restrict(A, B).
+acceptableTransitivity(undermine, A, B) :- \+ superiorArgument(B, A).
+acceptableTransitivity(contrary_undermine, _, _).
+acceptableTransitivity(undercut, _, _).
 
 %========================================================================
 % CONFLICT DEFINITION
@@ -169,6 +177,9 @@ conflict( [obl, [Atom]],  [perm, [neg, Atom]]).
 sub(B, [B |Subs]) :-
 	findall(Sub,  support(Sub, B), Subs ).
 
+ordinaryPremises(B, Prem) :-
+	findall(R,  (prem([R, _], B), \+ strict(R)), Prem).
+
 %------------------------------------------------------------------------
 % Rebutting definition: clash of incompatible conclusions
 % we assume a preference relation over arguments determining whether two
@@ -176,18 +187,35 @@ sub(B, [B |Subs]) :-
 % (being preferred) attacks the other
 %------------------------------------------------------------------------
 rebuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) :-
+	RuleB \== none,
+	\+ strict(RuleB),
 	conflict(RuleHeadA, RuleHeadB),
-	restrict([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]),
 	\+ superiorArgument([IDPremisesB, RuleB, RuleHeadB], [IDPremisesA, RuleA, RuleHeadA]).
 
 %------------------------------------------------------------------------
 % Contrary Rebutting definition: clash of a conclusion with a failure as premise assumption
-% we assume a preference relation over arguments determining whether two
-% rebutting arguments mutually attack each other or only one of them
-% (being preferred) attacks the other
 %------------------------------------------------------------------------
 contraryRebuts([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) :-
-	restrict([IDPremisesA, RuleA, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]),
+	RuleA \== none,
+	RuleB \== none,
+	\+ strict(RuleB),
+	rule([RuleB, Body, _]),
+	member([unless, RuleHeadA], Body).
+
+%------------------------------------------------------------------------
+% Undermining definition: clash of incompatible premises
+%------------------------------------------------------------------------
+undermines([IDPremisesA, RuleA, RuleHeadA], [[IDPremiseB], none, RuleHeadB]) :-
+	\+ strict(IDPremiseB),
+	conflict(RuleHeadA, RuleHeadB),
+	\+ superiorArgument([[IDPremiseB], none, RuleHeadB], [IDPremisesA, RuleA, RuleHeadA]).
+
+%------------------------------------------------------------------------
+% Contrary Undermining definition
+%------------------------------------------------------------------------
+contraryUndermines([IDPremisesA, none, RuleHeadA], [IDPremisesB, RuleB, RuleHeadB]) :-
+	RuleB \== none,
+	\+ strict(RuleB),
 	rule([RuleB, Body, _]),
 	member([unless, RuleHeadA], Body).
 
@@ -201,7 +229,7 @@ undercuts([_, _, [challenge(RuleB)]], [_, RuleB, _]) :-
 % Rebut restriction. If the attacked argument has a strict rule as 
 % the TopRule also the attacker must
 %------------------------------------------------------------------------
-restrict([_, TopRuleA, _], [_, TopRuleB, _ ]) :- 
+restrict([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
 	\+ (strict(TopRuleB), \+ strict(TopRuleA)).
 
 %------------------------------------------------------------------------
@@ -212,8 +240,27 @@ restrict([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
 
 superiorArgument([RulesA, TopRuleA, ConcA], [RulesB, TopRuleB, ConcB]) :-
 	influentRules(RulesA, TopRuleA, ConcA, InfluentA),
-	influentRules(RulesB, TopRuleB, ConcB, InfluentB),
-	weaker(InfluentB, InfluentA).
+	influentRules(RulesB, TopRuleB, ConcB, InfluentB), !,
+	ordinaryPremises([RulesA, TopRuleA, ConcA], PremisesA),
+	ordinaryPremises([RulesB, TopRuleB, ConcB], PremisesB),
+	superior(InfluentA, PremisesA, InfluentB, PremisesB).
+
+superior([], PremisesA, [], PremisesB) :-
+	weaker(PremisesB, PremisesA).
+superior(DefRulesA, _, DefRulesB, _) :-
+	orderingPrinciple(last),
+	(DefRulesA \== []; DefRulesB \== []),
+	weaker(DefRulesB, DefRulesA).
+superior(DefRulesA, [], DefRulesB, []) :-
+	orderingPrinciple(weakest),
+	weaker(DefRulesB, DefRulesA).
+superior(DefRulesA, PremisesA, DefRulesB, PremisesB) :-
+	orderingPrinciple(weakest),
+	(DefRulesA \== []; DefRulesB \== []),
+	(PremisesA \== []; PremisesB \== []),
+	weaker(DefRulesB, DefRulesA),
+	weaker(PremisesB, PremisesA).
+
 
 influentRules(Rules, _, _, InfluentRules) :-
 	orderingPrinciple(weakest),
@@ -224,8 +271,9 @@ influentRules(Rules, TopRule, Conc, InfluentRules) :-
 	lastRule(Rules, TopRule, Conc, InfluentRules).
 
 weakestRule(Rules, Influent) :-
-	findall(X, (member(X, Rules), \+ strict(X)), Influent).
+	findall(X, (member(X, Rules), \+ strict(X), \+ premise([X, _])), Influent).
 
+lastRule(Rules, none, Conc, []).
 lastRule(Rules, TopRule, Conc, [TopRule]) :- \+ strict(TopRule).
 lastRule(Rules, TopRule, Conc, Influent) :- 
 	strict(TopRule),
