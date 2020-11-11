@@ -50,10 +50,10 @@ expandPreferenceSet(_, _, Attacks, Attacks).
 /*
     Find one of the involved attacks and verifies if it is still relevant considering the new preference
 */
-computeInvalidAttack(RuleOne, RuleTwo, Arguments, Attacks, (rebut, [R1, TR1, C1],[R2, TR2, C2])) :-
-    member((rebut, [R1, TR1, C1],[R2, TR2, C2]), Attacks),
+computeInvalidAttack(RuleOne, RuleTwo, Arguments, Attacks, (T, [R1, TR1, C1],[R2, TR2, C2])) :-
+    member((T, [R1, TR1, C1],[R2, TR2, C2]), Attacks),
     (member(RuleOne, R1);member(RuleTwo, R1);member(RuleOne, R2);member(RuleTwo, R2)),
-    \+ rebuts([R1, TR1, C1],[R2, TR2, C2]).
+    \+ attacks(T, [R1, TR1, C1],[R2, TR2, C2]).
 
 /*
     Given a list of arguments and a target argument, returns the list of derived arguments

@@ -19,7 +19,7 @@
 % - and how can arguments be attacked
 %========================================================================
 %========================================================================
-buildArgumentationGraph([Arguments, Attacks, Supports] ) :-
+buildArgumentationGraph([Arguments, Attacks, Supports]) :-
         retractall(argument(_)),
         retractall(attack(_, _, _)),
 	    retractall(support(_, _)),
@@ -117,6 +117,7 @@ liftPremises(Supports, Argument) :-
 buildAttacks :-
 	argument(A),
 	argument(B),
+	A \== B,
     attacks(T, A, B),
 	\+(attack(T, A, B)),
 	asserta(attack(T, A, B)),
@@ -274,7 +275,7 @@ weakestRule(Rules, Influent) :-
 	findall(X, (member(X, Rules), \+ strict(X), \+ premise([X, _])), Influent).
 
 lastRule(Rules, none, Conc, []).
-lastRule(Rules, TopRule, Conc, [TopRule]) :- \+ strict(TopRule).
+lastRule(Rules, TopRule, Conc, [TopRule]) :- TopRule \== none, \+ strict(TopRule).
 lastRule(Rules, TopRule, Conc, Influent) :- 
 	strict(TopRule),
 	findall(X, (support([R, TR, C], [Rules, TopRule, Conc]), lastRule(R, TR, C, X)), Res),
