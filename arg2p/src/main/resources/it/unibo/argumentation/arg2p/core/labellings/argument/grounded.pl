@@ -52,8 +52,14 @@ expandPreferenceSet(_, _, Attacks, Attacks).
 */
 computeInvalidAttack(RuleOne, RuleTwo, Arguments, Attacks, (T, [R1, TR1, C1],[R2, TR2, C2])) :-
     member((T, [R1, TR1, C1],[R2, TR2, C2]), Attacks),
-    (member(RuleOne, R1);member(RuleTwo, R1);member(RuleOne, R2);member(RuleTwo, R2)),
-    \+ attacks(T, [R1, TR1, C1],[R2, TR2, C2]).
+    eligible(RuleOne, RuleTwo, R1, R2),
+    invalid(T, [R1, TR1, C1],[R2, TR2, C2]).
+
+eligible(RuleOne, RuleTwo, R1, R2) :- 
+    (member(RuleOne, R1);member(RuleTwo, R1);member(RuleOne, R2);member(RuleTwo, R2)), !.
+
+invalid(rebut, A, B) :- superiorArgument(B, A), !.
+invalid(undermine, A, B) :- superiorArgument(B, A), !.
 
 /*
     Given a list of arguments and a target argument, returns the list of derived arguments
