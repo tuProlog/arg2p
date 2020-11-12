@@ -230,7 +230,9 @@ undercuts([_, _, [challenge(RuleB)]], [_, RuleB, _]) :-
 % Rebut restriction. If the attacked argument has a strict rule as 
 % the TopRule also the attacker must
 %------------------------------------------------------------------------
+restrict(_, _) :- unrestrictedRebut.
 restrict([_, TopRuleA, _], [_, TopRuleB, _ ]) :-
+	\+ unrestrictedRebut,
 	\+ (strict(TopRuleB), \+ strict(TopRuleA)).
 
 %------------------------------------------------------------------------
@@ -296,6 +298,17 @@ weaker(RulesA, RulesB) :-
 	RulesB \== [],
 	orderingComparator(democrat),
 	weakerDemo(RulesA, RulesB).
+
+
+%(A, B) ∈ attnr(K) iff 1. A undercuts B, or 2. A rebuts B (at B′) 
+% and there is no defeasible rule d ∈ ldr(A) such that d ≺ last(B′).
+weaker(RulesA, RulesB) :-
+	RulesA \== [],
+	RulesB \== [],
+	orderingComparator(normal),
+	member(W, RulesA),
+	member(X, RulesB),
+	sup(X, W), !.
 
 weakerDemo([], _).
 weakerDemo([H|T], Rules) :-

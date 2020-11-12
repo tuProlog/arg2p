@@ -10,24 +10,28 @@ argumentLabellingMode(grounded).
 
 Caminada 4
 
-s1 : [] :> wr.
-s2 : [] :> go.
-s3 : b :> -hw.
-s4 : m :> hw.
+f1 --> wr.
+f2 --> go.
+
+s1 : b :> -hw.
+s2 : m :> hw.
 
 d1 : wr => m.
 d2 : go => b.
 
 graphBuildMode(base).
 statementLabellingMode(base).
-argumentLabellingMode(grounded).
+argumentLabellingMode(complete).
+orderingPrinciple(last).
+orderingComparator(normal).
 
 Caminada 5
 
-s1 : [] :> a.
-s2 : [] :> d.
-s3 : [] :> c.
-s4 : b,e :> -c.
+f1 --> a.
+f2 --> d.
+f3 --> c.
+
+s1 : b,e :> -c.
 
 d1 : a => b.
 d2 : d => e.
@@ -38,10 +42,11 @@ argumentLabellingMode(grounded).
 
 Caminada 6
 
-s1 : [] :> a.
-s2 : [] :> d.
-s3 : [] :> g.
-s4 : b,c,e,f :> -g.
+f1 --> a.
+f2 --> d.
+f3 --> g.
+
+s1 : b,c,e,f :> -g.
 
 d1 : a => b.
 d2 : b => c.
@@ -54,11 +59,12 @@ argumentLabellingMode(grounded).
 
 Caminada 7
 
-s1 : [] :> a.
-s2 : [] :> b.
-s3 : [] :> c.
-s4 : [] :> g.
-s5 : d,e,f :> -g.
+f1 --> a.
+f2 --> b.
+f3 --> c.
+f4 --> g.
+
+s1 : d,e,f :> -g.
 
 d1 : a => d.
 d2 : b => e.
