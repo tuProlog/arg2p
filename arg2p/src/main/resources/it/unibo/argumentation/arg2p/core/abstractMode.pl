@@ -8,6 +8,10 @@ buildGraph([Arguments, Attacks, Supports]) :-
     graphBuildMode(base),
     buildArgumentationGraph([Arguments, Attacks, Supports]).
 
+buildGraph([Arguments, Attacks, Supports]) :-
+    graphBuildMode(pgraph),
+    buildPrefArgumentationGraph([Arguments, Attacks, Supports]).
+
 buildArgumentLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]) :-
     argumentLabellingMode(grounded),
     argumentGroundedLabelling([Arguments, Attacks, Supports], [IN, OUT, UND]).

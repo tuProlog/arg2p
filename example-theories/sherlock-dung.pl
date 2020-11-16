@@ -52,8 +52,8 @@ d4 : [] => -have_motive(p2).
 p1 : have_motive(p1), -have_motive(p2) :> sup(d2, d1).
 p2 : -have_motive(p1), have_motive(p2) :> sup(d1, d2).
 
-graphBuildMode(base).
+graphBuildMode(pgraph).
 statementLabellingMode(base).
 argumentLabellingMode(grounded).
 orderingPrinciple(last).
-orderingComparator(elitist).
+orderingComparator(normal).
