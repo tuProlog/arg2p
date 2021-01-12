@@ -1,6 +1,20 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Aspic+ missing features (premises, axioms, undercuts, (contrary) undermines)
+- Aspic+ preference handling principles (elitist/democrat last/weakest link)
+- Automatic transposition closure
+- Optional restricted rebut (through `unrestrictedRebut` flag)
+- Dung's Normal Attack Relation
+- Dung's preference-based argumentation (pgraph)
+- Complete labelling semantic
+- Pure prolog premises (prolog{})
+- Skeptical and credulous acceptance
+### Changed
+- Improved modularisation through flags selection
+### Removed
+- Argumentation graph visualisation
 
 ## [0.3.3] - 2020-10-26
 ### Fixed
