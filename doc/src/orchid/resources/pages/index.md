@@ -4,13 +4,16 @@ title: Home
 
 # Arg2P
 
+<div style="background-color: red; border-radius: 5px;">
+    <h3 style="padding: 10px">Attention! This page is now discontinued. The project has been moved to <a href="https://pika-lab.gitlab.io/argumentation/arg2p-kt">a new location</a>.</h3>
+</div>
+
 Quick links:
 
 - [GitLab Repository](https://gitlab.com/pika-lab/argumentation/arg2p) (the one used by developers)
 - [GitLab Repository Test Release](https://gitlab.com/pika-lab/argumentation/arg2p/-/releases) (test used by developers)
 
 - [GitHub Repository](https://github.com/tuProlog/arg2p)
-- Maven Repository (where all releases are hosted) _(cooming soon)_
 
 ## Intro
 

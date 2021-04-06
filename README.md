@@ -1,11 +1,13 @@
 # Arg2P
 
+<div style="background-color: red; border-radius: 5px;">
+    <h3 style="padding: 10px">Attention! This page is now discontinued. The project has been moved to <a href="https://gitlab.com/pika-lab/argumentation/arg2p-kt">a new location</a>.</h3>
+</div>
+
 Quick links:
 
-- [GitLab Repository](https://gitlab.com/pika-lab/argumentation/arg2p-kt) (the one used by developers)
+- [GitLab Repository](https://gitlab.com/pika-lab/argumentation/arg2p-kt)
 - [GitHub Repository](https://github.com/tuProlog/arg2p)
-- Maven Repository _(cooming soon)_
-
 
 Arg2Prolog is an argumentation framework built on the top of [tuProlog (2P) engine](http://pika-lab.gitlab.io/tuprolog/2p-in-kotlin/). 
 Arg2P is a lightweight implementation of the ASPIC<sup>+</sup>-like system for structured  argumentation. 
